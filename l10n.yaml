@@ -1,0 +1,6 @@
+arb-dir: lib/src/ui/l10n
+template-arb-file: sec_en.arb
+output-localization-file: sec_locale.dart
+synthetic-package: false
+nullable-getter: false
+output-class: SecLocalizations

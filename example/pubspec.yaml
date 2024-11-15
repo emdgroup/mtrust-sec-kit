@@ -1,0 +1,36 @@
+name: example
+description: "A new Flutter project."
+publish_to: "none"
+version: 0.1.0
+
+environment:
+  sdk: ">=3.3.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  mtrust_sec_kit:
+    path: ../
+  mtrust_urp_types: ^4.1.0
+  mtrust_urp_ble_strategy: ^8.0.1
+  mtrust_urp_virtual_strategy: ^8.0.1
+  mtrust_urp_ui: ^8.0.1
+  liquid_flutter: ^15.3.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
+  fonts:
+    - family: Lato
+      fonts:
+        - asset: packages/liquid_flutter/fonts/Lato-Regular.ttf
+          weight: 500
+        - asset: packages/liquid_flutter/fonts/Lato-Bold.ttf
+          weight: 800
+    - family: LiquidIcons
+      fonts:
+        - asset: packages/liquid_flutter/fonts/LiquidIcons.ttf

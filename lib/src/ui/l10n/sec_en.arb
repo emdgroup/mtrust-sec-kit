@@ -1,0 +1,23 @@
+{
+    "@@locale": "en",
+    "successfullyVerfied": "Successfully verified",
+    "primeFailed": "Failed to prepare for scan",
+    "verificationFailed": "Verification failed",
+    "verificationFailedMessage": "Could not detect security pigment.",
+    "done": "Done",
+    "buttonContinue": "Continue",
+    "retry": "Retry",
+    "connected": "Connected",
+    "turnOnPrompt": "Press the button on the reader to turn it on",
+    "timeHint": "Once started you will have 30s to scan",
+    "readyToScan": "Ready to scan",
+    "startScan": "Start scan",
+    "distanceHint": "Approach the surface parallel to the reader at a distance of 8-12mm",
+    "primingTitle": "Getting ready to scan...",
+    "connecting": "Connecting...",
+    "disconnecting": "Disconnecting...",
+    "searching": "Searching...",
+    "scanning": "Scanning...",
+    "secondsLeft": "{seconds}s\nleft"
+    
+}

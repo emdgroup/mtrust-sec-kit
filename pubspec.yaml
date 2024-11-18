@@ -1,12 +1,11 @@
 name: mtrust_sec_kit
-description: A comprehensive SDK for interfacing with the MTrust SEC Readers. Including an example to get you started as fast as possible.
-version: 1.0.1-0
+description: A comprehensive SDK for interfacing with the MTrust SEC Readers.
+  Including an example to get you started as fast as possible.
+version: 1.0.1
 repository: https://github.com/emdgroup/mtrust-sec-kit
-
 environment:
   sdk: ">=3.2.5 <4.0.0"
   flutter: ">=1.17.0"
-
 dependencies:
   flutter:
     sdk: flutter
@@ -17,14 +16,12 @@ dependencies:
   mtrust_urp_core: ^8.0.1
   mtrust_urp_types: ^4.1.0
   mtrust_urp_ui: ^8.0.1
-
 dev_dependencies:
   flutter_test:
     sdk: flutter
   golden_toolkit: ^0.15.0
   mtrust_urp_virtual_strategy: ^8.0.1
   very_good_analysis: ^5.1.0
-
 flutter:
   uses-material-design: true
   generate: true

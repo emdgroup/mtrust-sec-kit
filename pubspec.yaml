@@ -15,7 +15,7 @@ dependencies:
   liquid_flutter: ^15.3.2
   mtrust_urp_core: ^8.0.1
   mtrust_urp_types: ^4.1.0
-  mtrust_urp_ui: ^8.0.1
+  mtrust_urp_ui: ^8.0.2-2
 dev_dependencies:
   flutter_test:
     sdk: flutter

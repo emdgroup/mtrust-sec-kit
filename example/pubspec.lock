@@ -328,18 +328,18 @@ packages:
     dependency: "direct main"
     description:
       name: mtrust_urp_ble_strategy
-      sha256: d872e089ce05b7c10bd4a3884efa734f3e29695d3c6111b46fa7b8acc083cc44
+      sha256: ed617e7572e688626f58cda9da636204c5234d40957c9f89dd992408a4357654
       url: "https://pub.dev"
     source: hosted
-    version: "8.0.1"
+    version: "8.0.2-2"
   mtrust_urp_core:
     dependency: transitive
     description:
       name: mtrust_urp_core
-      sha256: bc8d19183262e0d52c1139b3cb8a369594687876f5365a2106efa0cad082b286
+      sha256: "4657582d3e1b656825abb2c0ad8efc4396518b798ce54c0825aeb5df65f59c3c"
       url: "https://pub.dev"
     source: hosted
-    version: "8.0.1"
+    version: "8.0.2-2"
   mtrust_urp_types:
     dependency: "direct main"
     description:
@@ -352,18 +352,18 @@ packages:
     dependency: "direct main"
     description:
       name: mtrust_urp_ui
-      sha256: "7032a751b6edee69143e8feab69eedf7f942acb7ee51714e982ed9b673fcb4eb"
+      sha256: "07f71eb6c02be013afba0443f85b1db909d33f85e94fe4e5b794232caab027b7"
       url: "https://pub.dev"
     source: hosted
-    version: "8.0.1"
+    version: "8.0.2-2"
   mtrust_urp_virtual_strategy:
     dependency: "direct main"
     description:
       name: mtrust_urp_virtual_strategy
-      sha256: fd895b1b35d497adfb8f715baac585302eb2a40f885b0e617fb384975c4c7fa6
+      sha256: c87464e49488a7fdf253dcecf612be1470ccf1de8d419d929028def3d6276986
       url: "https://pub.dev"
     source: hosted
-    version: "8.0.1"
+    version: "8.0.2-2"
   multi_split_view:
     dependency: transitive
     description:

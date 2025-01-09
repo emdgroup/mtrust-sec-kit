@@ -52,7 +52,7 @@ class SecSheet extends StatelessWidget {
       sheetBuilder: (context, dismissSheet, isOpen) {
         Future<void> dismiss() async {
           if (turnOffOnClose && strategy.status == ConnectionStatus.connected) {
-            await SECReader(connectionStrategy: strategy).off();
+            await SECReader(connectionStrategy: strategy).turnOff();
           }
           if (disconnectOnClose) {
             await strategy.disconnectDevice();

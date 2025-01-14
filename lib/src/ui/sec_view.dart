@@ -150,7 +150,7 @@ class _ScanningView extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   animate: true,
                   children: [
-                    LdTextH(
+                    LdTextHs(
                       SecLocalizations.of(context).scanning,
                       textAlign: TextAlign.center,
                     ),
@@ -176,6 +176,7 @@ class _ScanningView extends StatelessWidget {
                       textAlign: TextAlign.center,
                     ),
                     ldSpacerL,
+                    ldSpacerL,
                     Expanded(
                       child: SecReaderVisualization(
                         ledColor: Colors.green,
@@ -187,14 +188,13 @@ class _ScanningView extends StatelessWidget {
                       ),
                     ),
                     ldSpacerL,
-                    LdButtonSuccess(
+                    LdButton(
                       onPressed: () async {
                         await onVerificationDone(
                           measurementController.state.result!,
                         );
                       },
                       loadingText: SecLocalizations.of(context).disconnecting,
-                      context: context,
                       child: Text(
                         SecLocalizations.of(context).done,
                       ),

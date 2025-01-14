@@ -6,5 +6,5 @@ export 'package:mtrust_urp_ui/mtrust_urp_ui.dart';
 
 export 'src/sec_reader.dart';
 export 'src/ui/l10n/sec_locale.dart';
-export 'src/ui/sec_sheet.dart';
+export 'src/ui/sec_modal.dart';
 export 'src/ui/sec_view.dart';

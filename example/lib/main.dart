@@ -2,7 +2,6 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:mtrust_sec_kit/mtrust_sec_kit.dart';
-//import 'package:mtrust_urp_ble_strategy/mtrust_urp_ble_strategy.dart';
 
 import 'package:mtrust_urp_virtual_strategy/mtrust_urp_virtual_strategy.dart';
 
@@ -56,6 +55,8 @@ class MainApp extends StatefulWidget {
 }
 
 class _MainAppState extends State<MainApp> {
+  bool _canDismiss = false;
+
   final _virtualStrategy = UrpVirtualStrategy((UrpRequest request) async {
     final payload = UrpSecCommandWrapper.fromBuffer(request.payload);
     final result = switch (payload.deviceCommand.command) {
@@ -90,14 +91,6 @@ class _MainAppState extends State<MainApp> {
     super.initState();
   }
 
-  // Will be called if a verification was successful.
-  void onVerificationDone(/*Measurement content*/) async {
-    // Get auth token
-  }
-
-  // Will be called if a verification failed.
-  void onVerificationFailed() {}
-
   @override
   Widget build(BuildContext context) {
     return LdPortal(
@@ -109,24 +102,41 @@ class _MainAppState extends State<MainApp> {
           ),
         ),
         body: SafeArea(
-          child: Column(mainAxisAlignment: MainAxisAlignment.end, children: [
-            Container(
-              width: double.infinity,
-            ),
-            SecSheet(
-              strategy: _virtualStrategy,
-              payload: "",
-              onVerificationDone: (measurement) {},
-              onVerificationFailed: () {},
-              builder: (context, openSheet) {
-                return LdButton(
-                  onPressed: openSheet,
-                  child: const Text("Open SEC Sheet"),
-                );
-              },
-            ),
-            ldSpacerL,
-          ]),
+          child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                LdToggle(
+                    label: "User can dismiss modal",
+                    checked: _canDismiss,
+                    onChanged: (value) {
+                      setState(() {
+                        _canDismiss = value;
+                      });
+                    }).padL(),
+                ldSpacerL,
+                SecModalBuilder(
+                  canDismiss: _canDismiss,
+                  strategy: _virtualStrategy,
+                  payload: "",
+                  onDismiss: () {
+                    debugPrint("Dismissed");
+                  },
+                  onVerificationDone: (measurement) {
+                    debugPrint("Verification done $measurement");
+                  },
+                  onVerificationFailed: () {
+                    debugPrint("Verification failed");
+                  },
+                  builder: (context, openSheet) {
+                    return LdButton(
+                      onPressed: openSheet,
+                      child: const Text("Open SEC Sheet"),
+                    );
+                  },
+                ),
+                ldSpacerL,
+              ]),
         ),
       ),
     );

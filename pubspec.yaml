@@ -12,15 +12,11 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   intl: ^0.19.0
-  liquid_flutter: ^18.1.1
-  mtrust_urp_core: ^9.0.0-0
+  liquid_flutter: ^18.2.0
+  mtrust_urp_core: ^9.0.0-5
   mtrust_urp_types: ^4.1.0
-  mtrust_urp_ui: ^9.0.0-0
-dependency_overrides:
-  mtrust_urp_core:
-    path: ../mtrust-urp/mtrust_urp_core
-  mtrust_urp_ui:
-    path: ../mtrust-urp/mtrust_urp_ui
+  mtrust_urp_ui: ^9.0.0-5
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

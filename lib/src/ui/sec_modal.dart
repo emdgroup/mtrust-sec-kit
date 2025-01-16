@@ -80,9 +80,9 @@ class SecModalBuilder extends StatelessWidget {
     }
 
     return LdModalBuilder(
-      builder: (context, openSheet) {
+      builder: (context, openModal) {
         return builder(context, () async {
-          final result = await openSheet();
+          final result = await openModal();
           if (result is SecResultFailed) {
             onVerificationFailed();
           } else if (result is SecResultSuccess) {
@@ -139,9 +139,11 @@ LdModal secModal({
     noHeader: true,
     userCanDismiss: canDismiss,
     topRadius: topRadius,
+    fixedDialogSize: const Size(400, 400),
     bottomRadius: bottomRadius,
     useSafeArea: useSafeArea,
     insets: insets,
+    size: LdSize.s,
     modalContent: (context) => AspectRatio(
       aspectRatio: 1,
       child: Stack(

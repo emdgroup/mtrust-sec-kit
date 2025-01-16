@@ -81,9 +81,9 @@ class _MainAppState extends State<MainApp> {
                   onVerificationFailed: () {
                     debugPrint("Verification failed");
                   },
-                  builder: (context, openSheet) {
+                  builder: (context, openModal) {
                     return LdButton(
-                      onPressed: openSheet,
+                      onPressed: openModal,
                       child: const Text("Open SEC Sheet"),
                     );
                   },

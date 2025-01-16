@@ -86,6 +86,21 @@ class _MainAppState extends State<MainApp> {
               },
             ),
             ldSpacerL,
+            LdButton(
+              onPressed: () async {
+                final result = await secModal(
+                  canDismiss: _canDismiss,
+                  topRadius: 10,
+                  bottomRadius: 10,
+                  strategy: virtualStrategy,
+                  payload: "<example payload>",
+                  insets: const EdgeInsets.all(1),
+                  useSafeArea: true,
+                ).show(context);
+                debugPrint("Result: $result");
+              },
+              child: const Text("Show using secModal().show()"),
+            ),
           ]),
         ).padL(),
       ),

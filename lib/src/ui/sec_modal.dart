@@ -123,14 +123,28 @@ class SecResultFailed extends SecResult {}
 
 /// Build a modal using [SecWidget], pops the result of the SEC verification.
 /// The result is either [SecResultSuccess], [SecResultFailed]
-/// or [SecResultDismissed].
+/// or [SecResultDismissed]. If the user dismisses the modal via the back
+/// button or the swip gesture, the result is null.
 LdModal secModal({
+  /// Whether the modal can be dissmissed by the user
   required bool canDismiss,
+
+  /// The top radius of the modal
   required double topRadius,
+
+  /// The bottom radius of the modal
   required double bottomRadius,
+
+  /// The strategy to use for the connection
   required ConnectionStrategy strategy,
+
+  /// The payload to send to the reader
   required String payload,
+
+  /// The insets of the modal
   required EdgeInsets insets,
+
+  /// Whether to use safe area inside the modal
   required bool useSafeArea,
 }) {
   return LdModal(

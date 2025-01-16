@@ -60,9 +60,6 @@ fluter:
           weight: 500
         - asset: packages/liquid_flutter/fonts/Lato-Bold.ttf
           weight: 800
-    - family: LiquidIcons
-      fonts:
-        - asset: packages/liquid_flutter/fonts/LiquidIcons.ttf
 ```
 
 
@@ -106,19 +103,21 @@ To utilize SEC-Kit's UI components, incorporate the following providers and port
     ```
 
 
-## Use the SEC Sheet 
+## Use the SEC Modal 
 
-To display the SEC Sheet, utilize the `SecSheet` widget. It requires a connection strategy, a payload, and callbacks for the verification process:
+To display the SEC Modal, utilize the `SecModalBuilder` widget. It requires a connection strategy, a payload, and callbacks for the verification process:
 
 
 ```dart
-  SecSheet(
+  SecModalBuilder(
     strategy: _connectionStrategy,
     payload: // Payload,
-    onVerificationDone: () {},
+    onVerificationDone: (mesurement) {},
     onVerificationFailed: () {},
-    builder: (context, openSheet) {
-      // Call openSheet to open the SEC Sheet
+    onDismiss: (){ } // Optionally 
+    canDismiss: true, // Define whether the user can dismiss the modal
+    builder: (context, openModal) {
+      // Call openModal to open the SEC Sheet
     },
   ),
 

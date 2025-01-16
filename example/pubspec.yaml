@@ -12,15 +12,17 @@ dependencies:
   mtrust_sec_kit:
     path: ../
   mtrust_urp_types: ^4.1.0
-  mtrust_urp_ble_strategy: ^9.0.0-0
-  mtrust_urp_virtual_strategy: ^9.0.0-0
-  mtrust_urp_ui: ^9.0.0-0
-  liquid_flutter: ^15.3.2
+  mtrust_urp_ble_strategy: ^9.0.0-5
+  mtrust_urp_virtual_strategy: ^9.0.0-5
+  mtrust_urp_ui: ^9.0.0-5
+  liquid_flutter: ^18.2.0
+
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^3.0.0
+  flutter_launcher_icons: ^0.14.2
 
 flutter:
   uses-material-design: true
@@ -31,6 +33,3 @@ flutter:
           weight: 500
         - asset: packages/liquid_flutter/fonts/Lato-Bold.ttf
           weight: 800
-    - family: LiquidIcons
-      fonts:
-        - asset: packages/liquid_flutter/fonts/LiquidIcons.ttf

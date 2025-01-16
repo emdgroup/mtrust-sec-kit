@@ -32,7 +32,7 @@ class MainApp extends StatefulWidget {
 }
 
 class _MainAppState extends State<MainApp> {
-  bool _canDismiss = false;
+  bool _canDismiss = true;
 
   @override
   void initState() {
@@ -55,42 +55,39 @@ class _MainAppState extends State<MainApp> {
           ),
         ),
         body: SafeArea(
-          child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                LdToggle(
-                    label: "User can dismiss modal",
-                    checked: _canDismiss,
-                    onChanged: (value) {
-                      setState(() {
-                        _canDismiss = value;
-                      });
-                    }).padL(),
-                ldSpacerL,
-                SecModalBuilder(
-                  canDismiss: _canDismiss,
-                  strategy: virtualStrategy,
-                  payload: "<example payload>",
-                  onDismiss: () {
-                    debugPrint("Dismissed");
-                  },
-                  onVerificationDone: (measurement) {
-                    debugPrint("Verification done $measurement");
-                  },
-                  onVerificationFailed: () {
-                    debugPrint("Verification failed");
-                  },
-                  builder: (context, openModal) {
-                    return LdButton(
-                      onPressed: openModal,
-                      child: const Text("Open SEC Sheet"),
-                    );
-                  },
-                ),
-                ldSpacerL,
-              ]),
-        ),
+          child: LdAutoSpace(children: [
+            LdToggle(
+                label: "User can dismiss modal",
+                checked: _canDismiss,
+                onChanged: (value) {
+                  setState(() {
+                    _canDismiss = value;
+                  });
+                }),
+            SecModalBuilder(
+              canDismiss: _canDismiss,
+              strategy: virtualStrategy,
+              payload: "<example payload>",
+              onDismiss: () {
+                debugPrint("Dismissed");
+              },
+              onVerificationDone: (measurement) {
+                debugPrint("Verification done $measurement");
+              },
+              onVerificationFailed: () {
+                debugPrint("Verification failed");
+              },
+              builder: (context, openModal) {
+                return LdButton(
+                  onPressed: openModal,
+                  size: LdSize.l,
+                  child: const Text("Start verification"),
+                );
+              },
+            ),
+            ldSpacerL,
+          ]),
+        ).padL(),
       ),
     );
   }

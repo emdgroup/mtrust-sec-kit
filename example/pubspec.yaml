@@ -12,12 +12,10 @@ dependencies:
   mtrust_sec_kit:
     path: ../
   mtrust_urp_types: ^4.1.0
-  mtrust_urp_ble_strategy: ^9.0.0-5
-  mtrust_urp_virtual_strategy: ^9.0.0-5
-  mtrust_urp_ui: ^9.0.0-5
-  liquid_flutter: ^18.2.0
-
-
+  mtrust_urp_ble_strategy: ^9.0.0-6
+  mtrust_urp_virtual_strategy: ^9.0.0-6
+  mtrust_urp_ui: ^9.0.0-6
+  liquid_flutter: ^19.0.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

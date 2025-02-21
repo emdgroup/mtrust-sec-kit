@@ -64,4 +64,13 @@ class SecLocalizationsEn extends SecLocalizations {
   String secondsLeft(Object seconds) {
     return '${seconds}s\nleft';
   }
+
+  @override
+  String get incompatibleFirmware => 'Firmware incompatible. Please update!';
+
+  @override
+  String get tokenFailed => 'Getting new token failed!';
+
+  @override
+  String get readingsLeft => 'Readings left with current token:';
 }

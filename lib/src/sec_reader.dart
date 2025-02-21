@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:mtrust_sec_kit/mtrust_sec_kit.dart';
-import 'package:mtrust_sec_kit/src/sec_reader_exception.dart';
 
 /// [SECReader] is a class that provides a high-level API to interact with
 /// a SEC reader.
@@ -38,6 +37,15 @@ class SECReader extends CmdWrapper {
 
     /// The origin device.
     final UrpDeviceIdentifier origin;
+
+    int _requestTokenAmount = 10;
+
+    /// Sets the amount of tokens to be requested if the device has no more
+    /// tokens available. The default is 10.
+    void setTokenAmount(int amount) {
+      _requestTokenAmount = amount;
+      notifyListeners();
+    }
 
   /// Find and connect to a SEC reader using the given [connectionStrategy].
   /// If [deviceAddress] is provided, it will try to connect to the reader
@@ -319,12 +327,82 @@ class SECReader extends CmdWrapper {
   }
 
   /// Prepares (primes) a measurement for the given [payload].
-  Future<void> prime(String payload) async {
+  Future<UrpSecPrimeResponse?> prime(String payload) async {
     final cmd = UrpSecDeviceCommand(
       command: UrpSecCommand.urpSecPrime,
       primeParameters: UrpSecPrimeParameters(payload: payload),
     );
+    try {
+      final res = await _addCommandToQueue(deviceCommand: cmd);
+      return UrpSecPrimeResponse.fromBuffer(res.payload);
+    } catch (e) {
+      if(e is DeviceError) {
+        if(e.errorCode == 4) {
+          final publicKey = await getPublicKey();
+          final oldToken = await requestToken();
+          final newToken = await getToken(oldToken, publicKey);
+          if(newToken == null) {
+            throw SecReaderException(
+              message: 'Failed to get new tooken!',
+              type: SecReaderExceptionType.tokenFailed,
+            );
+          }
+          await setToken(newToken);
+          return prime(payload);
+        } else {
+          rethrow;
+        }
+      }
+      return null;
+    }
+  }
+
+  /// Request the device to send a new token request
+  Future<UrpSecureToken> requestToken() async {
+    final cmd = UrpSecDeviceCommand(
+      command: UrpSecCommand.urpSecRequestToken,
+      tokenRequest: UrpTokenRequest(
+        amount: _requestTokenAmount,
+      ),
+    );
+    final res = await _addCommandToQueue(
+      deviceCommand: cmd,
+    );
+
+    if(!res.hasPayload()) {
+      throw SecReaderException(
+        message: 'Failed to request token!',
+        type: SecReaderExceptionType.tokenFailed,
+      );
+    }
+    return UrpSecureToken.fromBuffer(res.payload);
+  }
+
+  /// Install a new token after a token request on the device
+  Future<void> setToken(UrpSecureToken token) async {
+    final cmd = UrpSecDeviceCommand(
+      command: UrpSecCommand.urpSecSetToken,
+      secureToken: token,
+    );
     await _addCommandToQueue(deviceCommand: cmd);
+  }
+
+  /// Request the currently installed token from the device
+  Future<UrpSecureToken> getCurrentToken() async {
+    final cmd = UrpSecDeviceCommand(
+      command: UrpSecCommand.urpSecGetToken,
+    );
+    final res = await _addCommandToQueue(
+      deviceCommand: cmd,
+    );
+
+    if(!res.hasPayload()) {
+      throw SecReaderException(
+        message: 'Failed to get current token!',
+        type: SecReaderExceptionType.tokenFailed,
+      );
+    }
+    return UrpSecureToken.fromBuffer(res.payload);
   }
 
   /// Unprime a measurement.
@@ -341,12 +419,22 @@ class SECReader extends CmdWrapper {
     final cmd = UrpSecDeviceCommand(
       command: UrpSecCommand.urpSecStartMeasurement,
     );
-    final result = await _addCommandToQueue(deviceCommand: cmd);
+    final res = await _addCommandToQueue(deviceCommand: cmd);
 
-    if (!result.hasPayload()) {
-      throw Exception('Failed to measure.');
+    if (!res.hasPayload()) {
+      throw SecReaderException(
+        message: 'Failed to measure!',
+        type: SecReaderExceptionType.measurementFailed,
+      );
     }
-    return UrpSecMeasurement.fromBuffer(result.payload);
+    try {
+      return UrpSecMeasurement.fromBuffer(res.payload);
+    } catch (e) {
+      throw SecReaderException(
+        message: 'Incompatible device firmware version. Please update!',
+        type: SecReaderExceptionType.incompatibleFirmware,
+      );
+    }
   }
 
   /// Stop measurement

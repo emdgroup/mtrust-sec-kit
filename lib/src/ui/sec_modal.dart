@@ -161,36 +161,15 @@ LdModal secModal({
     size: LdSize.s,
     modalContent: (context) => AspectRatio(
       aspectRatio: 1,
-      child: Stack(
-        children: [
-          SecWidget(
-            strategy: strategy,
-            payload: payload,
-            onVerificationDone: (UrpSecMeasurement measurement) async {
-              Navigator.of(context).pop(SecResultSuccess(measurement));
-            },
-            onVerificationFailed: () async {
-              Navigator.of(context).pop(SecResultFailed());
-            },
-          ),
-          if (canDismiss)
-            Align(
-              alignment: Alignment.topRight,
-              child: IntrinsicHeight(
-                child: LdButton(
-                  size: LdSize.s,
-                  mode: LdButtonMode.vague,
-                  onPressed: () async {
-                    Navigator.of(context).pop(SecResultDismissed());
-                  },
-                  child: const Icon(
-                    Icons.clear,
-                    size: 18,
-                  ),
-                ),
-              ),
-            ),
-        ],
+      child: SecWidget(
+        strategy: strategy,
+        payload: payload,
+        onVerificationDone: (UrpSecMeasurement measurement) async {
+          Navigator.of(context).pop(SecResultSuccess(measurement));
+        },
+        onVerificationFailed: () async {
+          Navigator.of(context).pop(SecResultFailed());
+        },
       ),
     ).padL(),
   );

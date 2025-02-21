@@ -37,6 +37,8 @@ class _MainAppState extends State<MainApp> {
 
   final UrpBleStrategy _bleStrategy = UrpBleStrategy();
 
+  bool _useVirtual = false;
+
   @override
   void initState() {
     virtualStrategy.createVirtualReader(FoundDevice(
@@ -45,6 +47,12 @@ class _MainAppState extends State<MainApp> {
       address: "00:00:00:00:00:00",
     ));
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _bleStrategy.dispose();
+    super.dispose();
   }
 
   @override
@@ -60,6 +68,14 @@ class _MainAppState extends State<MainApp> {
         body: SafeArea(
           child: LdAutoSpace(children: [
             LdToggle(
+                label: "Use virtual reader",
+                checked: _useVirtual,
+                onChanged: (value) {
+                  setState(() {
+                    _useVirtual = value;
+                  });
+                }),
+            LdToggle(
                 label: "User can dismiss modal",
                 checked: _canDismiss,
                 onChanged: (value) {
@@ -69,7 +85,7 @@ class _MainAppState extends State<MainApp> {
                 }),
             SecModalBuilder(
               canDismiss: _canDismiss,
-              strategy: _bleStrategy,
+              strategy: _useVirtual ? virtualStrategy : _bleStrategy,
               payload: "<example payload>",
               onDismiss: () {
                 debugPrint("Dismissed");

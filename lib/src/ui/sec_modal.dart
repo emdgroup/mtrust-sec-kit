@@ -151,6 +151,7 @@ LdModal secModal({
     disableScrolling: true,
     padding: EdgeInsets.zero,
     noHeader: true,
+    showDismissButton: false,
     userCanDismiss: canDismiss,
     topRadius: topRadius,
     fixedDialogSize: const Size(400, 400),

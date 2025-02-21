@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:mtrust_sec_kit/mtrust_sec_kit.dart';
 
 import 'package:liquid_flutter/liquid_flutter.dart';
+import 'package:mtrust_urp_ble_strategy/mtrust_urp_ble_strategy.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -33,6 +34,8 @@ class MainApp extends StatefulWidget {
 
 class _MainAppState extends State<MainApp> {
   bool _canDismiss = true;
+
+  final UrpBleStrategy _bleStrategy = UrpBleStrategy();
 
   @override
   void initState() {
@@ -66,7 +69,7 @@ class _MainAppState extends State<MainApp> {
                 }),
             SecModalBuilder(
               canDismiss: _canDismiss,
-              strategy: virtualStrategy,
+              strategy: _bleStrategy,
               payload: "<example payload>",
               onDismiss: () {
                 debugPrint("Dismissed");
@@ -92,7 +95,7 @@ class _MainAppState extends State<MainApp> {
                   canDismiss: _canDismiss,
                   topRadius: 10,
                   bottomRadius: 10,
-                  strategy: virtualStrategy,
+                  strategy: _bleStrategy,
                   payload: "<example payload>",
                   insets: const EdgeInsets.all(1),
                   useSafeArea: true,

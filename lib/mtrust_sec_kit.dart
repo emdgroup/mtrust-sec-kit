@@ -5,6 +5,7 @@ export 'package:mtrust_urp_types/sec.pb.dart';
 export 'package:mtrust_urp_ui/mtrust_urp_ui.dart';
 
 export 'src/sec_reader.dart';
+export 'src/sec_reader_exception.dart';
 export 'src/ui/l10n/sec_locale.dart';
 export 'src/ui/sec_modal.dart';
-export 'src/ui/sec_view.dart';
+export 'src/ui/sec_widget.dart';

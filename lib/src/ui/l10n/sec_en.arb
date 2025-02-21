@@ -18,6 +18,8 @@
     "disconnecting": "Disconnecting...",
     "searching": "Searching...",
     "scanning": "Scanning...",
-    "secondsLeft": "{seconds}s\nleft"
-    
+    "secondsLeft": "{seconds}s\nleft",
+    "incompatibleFirmware": "Firmware incompatible. Please update!",
+    "tokenFailed": "Getting new token failed!",
+    "readingsLeft": "Readings left with current token:"
 }

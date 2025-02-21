@@ -85,6 +85,8 @@ class _MainAppState extends State<MainApp> {
                 }),
             SecModalBuilder(
               canDismiss: _canDismiss,
+              turnOffOnClose: false,
+              disconnectOnClose: true,
               strategy: _useVirtual ? virtualStrategy : _bleStrategy,
               payload: "<example payload>",
               onDismiss: () {
@@ -103,22 +105,6 @@ class _MainAppState extends State<MainApp> {
                   child: const Text("Start verification"),
                 );
               },
-            ),
-            ldSpacerL,
-            LdButton(
-              onPressed: () async {
-                final result = await secModal(
-                  canDismiss: _canDismiss,
-                  topRadius: 10,
-                  bottomRadius: 10,
-                  strategy: _bleStrategy,
-                  payload: "<example payload>",
-                  insets: const EdgeInsets.all(1),
-                  useSafeArea: true,
-                ).show(context);
-                debugPrint("Result: $result");
-              },
-              child: const Text("Show using secModal().show()"),
             ),
           ]),
         ).padL(),

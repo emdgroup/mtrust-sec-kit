@@ -16,6 +16,7 @@ class SecWidget extends StatelessWidget {
     required this.onVerificationDone,
     required this.onVerificationFailed,
     this.storageAdapter,
+    this.tokenAmount,
     super.key,
   });
 
@@ -35,6 +36,9 @@ class SecWidget extends StatelessWidget {
   /// Will be called if a verification failed.
   final Future<void> Function() onVerificationFailed;
 
+  /// Amount of token to be requested on token refresh.
+  final int? tokenAmount;
+
   @override
   Widget build(BuildContext context) {
     return DeviceConnector(
@@ -49,6 +53,9 @@ class SecWidget extends StatelessWidget {
               final reader = SECReader(
                 connectionStrategy: strategy,
               );
+              if(tokenAmount != null) {
+                reader.setTokenAmount(tokenAmount!);
+              }
               return reader.prime(payload);
             },
           ),

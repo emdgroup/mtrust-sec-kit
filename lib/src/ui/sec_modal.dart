@@ -13,7 +13,7 @@ import 'package:mtrust_sec_kit/src/ui/sec_result.dart';
 /// Provide a [builder] that renders some UI with a callback to open the sheet.
 class SecModalBuilder extends StatelessWidget {
   /// Creates a new instance of [SecModalBuilder]
-  const SecModalBuilder({
+  const SecModalBuilder({ 
     required this.strategy,
     required this.payload,
     required this.onVerificationDone,
@@ -23,6 +23,7 @@ class SecModalBuilder extends StatelessWidget {
     this.disconnectOnClose = true,
     this.turnOffOnClose = true,
     this.canDismiss = true,
+    this.fixedDialogSize = const Size(400, 400),
     super.key,
   });
 
@@ -52,6 +53,9 @@ class SecModalBuilder extends StatelessWidget {
 
   /// Whether the modal can be dissmissed by the user
   final bool canDismiss;
+
+  /// Size of the modal
+  final Size fixedDialogSize;
 
   @override
   Widget build(BuildContext context) {
@@ -101,6 +105,7 @@ class SecModalBuilder extends StatelessWidget {
         useSafeArea: useSafeArea,
         strategy: strategy,
         payload: payload,
+        fixedDialogSize: fixedDialogSize,
       ),
     );
   }
@@ -146,15 +151,18 @@ LdModal secModal({
 
   /// Whether to use safe area inside the modal
   required bool useSafeArea,
+
+  /// Size of the modal
+  Size fixedDialogSize = const Size(400, 400),
 }) {
   return LdModal(
     disableScrolling: true,
     padding: EdgeInsets.zero,
     noHeader: true,
-    showDismissButton: false,
+    showDismissButton: canDismiss,
     userCanDismiss: canDismiss,
     topRadius: topRadius,
-    fixedDialogSize: const Size(400, 400),
+    fixedDialogSize: fixedDialogSize,
     bottomRadius: bottomRadius,
     useSafeArea: useSafeArea,
     insets: insets,

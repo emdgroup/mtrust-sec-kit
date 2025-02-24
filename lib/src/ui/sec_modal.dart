@@ -23,7 +23,6 @@ class SecModalBuilder extends StatelessWidget {
     this.disconnectOnClose = true,
     this.turnOffOnClose = true,
     this.canDismiss = true,
-    this.fixedDialogSize = const Size(400, 400),
     this.tokenAmount,
     super.key,
   });
@@ -54,9 +53,6 @@ class SecModalBuilder extends StatelessWidget {
 
   /// Whether the modal can be dissmissed by the user.
   final bool canDismiss;
-
-  /// Size of the modal.
-  final Size fixedDialogSize;
 
   /// Amount of tokens to be requested on token refresh.
   final int? tokenAmount;
@@ -109,7 +105,6 @@ class SecModalBuilder extends StatelessWidget {
         useSafeArea: useSafeArea,
         strategy: strategy,
         payload: payload,
-        fixedDialogSize: fixedDialogSize,
         tokenAmount: tokenAmount,
       ),
     );
@@ -157,9 +152,6 @@ LdModal secModal({
   /// Whether to use safe area inside the modal
   required bool useSafeArea,
 
-  /// Size of the modal
-  Size fixedDialogSize = const Size(400, 400),
-
   /// Amount of token to be requested on token refresh
   int? tokenAmount,
 }) {
@@ -170,7 +162,6 @@ LdModal secModal({
     showDismissButton: canDismiss,
     userCanDismiss: canDismiss,
     topRadius: topRadius,
-    fixedDialogSize: fixedDialogSize,
     bottomRadius: bottomRadius,
     useSafeArea: useSafeArea,
     insets: insets,

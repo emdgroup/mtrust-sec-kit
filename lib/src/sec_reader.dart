@@ -415,7 +415,7 @@ class SECReader extends CmdWrapper {
 
   /// Measures until detection. Returns the result if successful.
   /// Triggers an error if failed.
-  Future<UrpSecMeasurement> startMeasurement() async {
+  Future<UrpSecSecureMeasurement> startMeasurement() async {
     final cmd = UrpSecDeviceCommand(
       command: UrpSecCommand.urpSecStartMeasurement,
     );
@@ -428,7 +428,7 @@ class SECReader extends CmdWrapper {
       );
     }
     try {
-      return UrpSecMeasurement.fromBuffer(res.payload);
+      return UrpSecSecureMeasurement.fromBuffer(res.payload);
     } catch (e) {
       throw SecReaderException(
         message: 'Incompatible device firmware version. Please update!',

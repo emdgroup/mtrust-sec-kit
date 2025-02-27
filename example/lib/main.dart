@@ -93,7 +93,7 @@ class _MainAppState extends State<MainApp> {
                 debugPrint("Dismissed");
               },
               onVerificationDone: (measurement) {
-                debugPrint("Verification done $measurement");
+                debugPrint("Verification done ${measurement.measurement}");
               },
               onVerificationFailed: () {
                 debugPrint("Verification failed");

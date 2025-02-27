@@ -40,7 +40,7 @@ class SecModalBuilder extends StatelessWidget {
   final String payload;
 
   /// Will be called if a verification was successful.
-  final void Function(UrpSecMeasurement measurement) onVerificationDone;
+  final void Function(UrpSecSecureMeasurement measurement) onVerificationDone;
 
   /// Will be called if a verification failed.
   final void Function() onVerificationFailed;
@@ -117,7 +117,7 @@ class SecResultSuccess extends SecResult {
   SecResultSuccess(this.measurement);
 
   /// The resulting measurement.
-  final UrpSecMeasurement measurement;
+  final UrpSecSecureMeasurement measurement;
 }
 
 /// Returned in case of a dismissed SEC verification.
@@ -171,7 +171,7 @@ LdModal secModal({
       child: SecWidget(
         strategy: strategy,
         payload: payload,
-        onVerificationDone: (UrpSecMeasurement measurement) async {
+        onVerificationDone: (UrpSecSecureMeasurement measurement) async {
           Navigator.of(context).pop(SecResultSuccess(measurement));
         },
         onVerificationFailed: () async {

@@ -31,7 +31,9 @@ class SecWidget extends StatelessWidget {
   final String payload;
 
   /// Will be called if a verification was successful.
-  final Future<void> Function(UrpSecMeasurement measurement) onVerificationDone;
+  final Future<void> Function(
+    UrpSecSecureMeasurement measurement,
+  ) onVerificationDone;
 
   /// Will be called if a verification failed.
   final Future<void> Function() onVerificationFailed;
@@ -122,7 +124,9 @@ class SecWidget extends StatelessWidget {
 
               return _ScanningView(
                 strategy: strategy,
-                onVerificationDone: (UrpSecMeasurement measurement) async {
+                onVerificationDone: (
+                  UrpSecSecureMeasurement measurement,
+                ) async {
                   controller.reset();
                   await onVerificationDone(measurement);
                 },
@@ -151,14 +155,16 @@ class _ScanningView extends StatelessWidget {
 
   final int? remainingScans;
   final ConnectionStrategy strategy;
-  final Future<void> Function(UrpSecMeasurement measurement) onVerificationDone;
+  final Future<void> Function(
+    UrpSecSecureMeasurement measurement,
+  ) onVerificationDone;
   final Future<void> Function() onVerificationFailed;
 
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: LdSubmit<UrpSecMeasurement>(
-        config: LdSubmitConfig<UrpSecMeasurement>(
+      child: LdSubmit<UrpSecSecureMeasurement>(
+        config: LdSubmitConfig<UrpSecSecureMeasurement>(
           loadingText: SecLocalizations.of(context).scanning,
           submitText: SecLocalizations.of(context).startScan,
           timeout: const Duration(seconds: 35),
@@ -169,7 +175,7 @@ class _ScanningView extends StatelessWidget {
             return reader.startMeasurement();
           },
         ),
-        builder: LdSubmitCustomBuilder<UrpSecMeasurement>(
+        builder: LdSubmitCustomBuilder<UrpSecSecureMeasurement>(
           builder: (context, measurementController, measurementStateType) {
             switch (measurementStateType) {
               case (LdSubmitStateType.loading):

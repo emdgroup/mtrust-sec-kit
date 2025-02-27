@@ -7,10 +7,11 @@ final virtualStrategy = UrpVirtualStrategy((UrpRequest request) async {
   final result = switch (payload.deviceCommand.command) {
     (UrpSecCommand.urpSecPrime) => UrpResponse(),
     (UrpSecCommand.urpSecStartMeasurement) => UrpResponse(
-        payload: UrpSecMeasurement(
-          nonce: 12,
-          readerId: "foo",
-          signature: "bar",
+        payload: UrpSecSecureMeasurement(
+          measurement: UrpSecMeasurement(
+            readerSn: "foo",
+            modelId: "bar",
+          ),
         ).writeToBuffer(),
       ),
     _ => switch (payload.coreCommand.command) {

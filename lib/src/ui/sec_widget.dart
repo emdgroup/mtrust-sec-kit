@@ -66,7 +66,6 @@ class SecWidget extends StatelessWidget {
               if (stateType == LdSubmitStateType.error) {
                 var message = controller.state.error?.message 
                               ?? 'Unknown error';
-                final moreInfo = controller.state.error?.moreInfo;
                 if(controller.state.error?.exception.runtimeType 
                     == SecReaderException) {
                   final error = controller.state.error?.exception 
@@ -74,6 +73,12 @@ class SecWidget extends StatelessWidget {
                   if(error.type == SecReaderExceptionType.tokenFailed) {
                     message = SecLocalizations.of(context).tokenFailed;
                   }
+                }
+                if(controller.state.error?.exception.runtimeType 
+                    == ApiException) {
+                  final error = controller.state.error?.exception 
+                                as ApiException;
+                  message = error.errorMessage;
                 }
                 return LdAutoSpace(
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -85,10 +90,6 @@ class SecWidget extends StatelessWidget {
                     LdTextP(
                       message,
                     ),
-                    if(moreInfo != null)
-                      LdTextP(
-                        moreInfo,
-                      ),
                     Expanded(
                       child: SecReaderVisualization(
                         ledColor: Colors.red,

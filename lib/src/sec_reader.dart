@@ -340,15 +340,19 @@ class SECReader extends CmdWrapper {
         if(e.errorCode == 4) {
           final publicKey = await getPublicKey();
           final oldToken = await requestToken();
-          final newToken = await getToken(oldToken, publicKey);
-          if(newToken == null) {
-            throw SecReaderException(
-              message: 'Failed to get new tooken!',
-              type: SecReaderExceptionType.tokenFailed,
-            );
+          try {
+            final newToken = await getToken(oldToken, publicKey);
+            if(newToken == null) {
+              throw SecReaderException(
+                message: 'Failed to get new token!',
+                type: SecReaderExceptionType.tokenFailed,
+              );
+            }
+            await setToken(newToken);
+            return prime(payload);
+          } catch (e) {
+            rethrow;
           }
-          await setToken(newToken);
-          return prime(payload);
         } else {
           rethrow;
         }

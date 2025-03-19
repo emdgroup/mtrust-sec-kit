@@ -1,6 +1,6 @@
 {
     "@@locale": "de",
-    "successfullyVerfied": "Verifizierung erfolgreich",
+    "successfullyVerfied": "Verifizierung erfolgreich mit ",
     "verificationFailed": "Verifizierung fehlgeschlagen",
     "verificationFailedMessage": "Sicherheitspigment nicht erkannt.",
     "done": "Fertig",

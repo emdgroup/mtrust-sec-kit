@@ -98,7 +98,7 @@ abstract class SecLocalizations {
   /// No description provided for @successfullyVerfied.
   ///
   /// In en, this message translates to:
-  /// **'Successfully verified'**
+  /// **'Successfully verified with '**
   String get successfullyVerfied;
 
   /// No description provided for @primeFailed.

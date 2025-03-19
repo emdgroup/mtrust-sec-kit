@@ -34,6 +34,18 @@ class CompleterStrategy {
 
           return UrpResponse();
 
+        case (UrpSecCommand.urpSecGetModelInfo):
+          return UrpResponse(
+            payload: UrpSecModels(
+              models: [
+                UrpSecModelInfo(
+                  modelId: 'Virtual Model',
+                  version: '0.0.1',
+                ),
+              ],
+            ).writeToBuffer(),
+          );
+
         case UrpSecCommand.urpSecStartMeasurement:
           startMeasurementCompleter = Completer<void>();
           try {
@@ -43,10 +55,17 @@ class CompleterStrategy {
           }
 
           return UrpResponse(
-            payload: UrpSecMeasurementResult(
-              modelId: '123',
-              scoreDistance: 0.5,
-              orthogonalDistance: 0.6,
+            payload: UrpSecSecureMeasurement(
+              signature: [0, 0, 0, 0],
+              measurement: UrpSecMeasurement(
+                result: [
+                  UrpSecMeasurementResult(
+                    modelId: '123',
+                    scoreDistance: 0.5,
+                    orthogonalDistance: 0.6,
+                  ),
+                ],
+              ),
             ).writeToBuffer(),
           );
         // ignore: no_default_cases

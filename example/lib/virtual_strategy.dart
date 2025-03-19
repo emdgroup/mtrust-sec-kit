@@ -10,7 +10,11 @@ final virtualStrategy = UrpVirtualStrategy((UrpRequest request) async {
         payload: UrpSecSecureMeasurement(
           measurement: UrpSecMeasurement(
             readerSn: "foo",
-            modelId: "bar",
+            result: [
+              UrpSecMeasurementResult(
+                modelId: "bar",
+              )
+            ],
           ),
         ).writeToBuffer(),
       ),

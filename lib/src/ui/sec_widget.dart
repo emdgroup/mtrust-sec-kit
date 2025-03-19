@@ -43,6 +43,9 @@ class SecWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    var models = <UrpSecModelInfo>[];
+
     return DeviceConnector(
       connectionStrategy: strategy,
       storageAdapter: storageAdapter,
@@ -55,6 +58,7 @@ class SecWidget extends StatelessWidget {
               final reader = SECReader(
                 connectionStrategy: strategy,
               );
+              models = await reader.getModelInfo();
               if(tokenAmount != null) {
                 reader.setTokenAmount(tokenAmount!);
               }
@@ -136,6 +140,7 @@ class SecWidget extends StatelessWidget {
                   await onVerificationFailed();
                 },
                 remainingScans: controller.state.result?.gsa,
+                models: models,
               );
             },
           ),
@@ -152,6 +157,7 @@ class _ScanningView extends StatelessWidget {
     required this.onVerificationDone,
     required this.onVerificationFailed,
     this.remainingScans,
+    this.models,
   });
 
   final int? remainingScans;
@@ -160,6 +166,7 @@ class _ScanningView extends StatelessWidget {
     UrpSecSecureMeasurement measurement,
   ) onVerificationDone;
   final Future<void> Function() onVerificationFailed;
+  final List<UrpSecModelInfo>? models;
 
   @override
   Widget build(BuildContext context) {
@@ -178,6 +185,11 @@ class _ScanningView extends StatelessWidget {
         ),
         builder: LdSubmitCustomBuilder<UrpSecSecureMeasurement>(
           builder: (context, measurementController, measurementStateType) {
+
+            final installedModels = models != null
+              ? models!.map((model) => '${model.modelId} ${model.version}').join(', ')
+              : '';
+
             switch (measurementStateType) {
               case (LdSubmitStateType.loading):
                 return LdAutoSpace(
@@ -192,6 +204,10 @@ class _ScanningView extends StatelessWidget {
                       SecLocalizations.of(context).distanceHint,
                       textAlign: TextAlign.center,
                     ),
+                    LdTextP(
+                      installedModels,
+                      textAlign: TextAlign.center,
+                    ),
                     ldSpacerL,
                     const Expanded(
                       child: ScanningInstruction(),
@@ -202,12 +218,16 @@ class _ScanningView extends StatelessWidget {
                   ],
                 );
               case (LdSubmitStateType.result):
+
+                final result = measurementController.state.result!;
+                final model = result.measurement.result.first.modelId;
+
                 return LdAutoSpace(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   animate: true,
                   children: [
                     LdTextHs(
-                      SecLocalizations.of(context).successfullyVerfied,
+                      SecLocalizations.of(context).successfullyVerfied + model,
                       textAlign: TextAlign.center,
                     ),
                     ldSpacerL,
@@ -226,7 +246,7 @@ class _ScanningView extends StatelessWidget {
                     LdButton(
                       onPressed: () async {
                         await onVerificationDone(
-                          measurementController.state.result!,
+                          result,
                         );
                       },
                       loadingText: SecLocalizations.of(context).disconnecting,
@@ -246,7 +266,11 @@ class _ScanningView extends StatelessWidget {
                       SecLocalizations.of(context).readyToScan,
                       textAlign: TextAlign.center,
                     ),
-                    ldSpacerL,
+                    LdTextP(
+                      installedModels,
+                      textAlign: TextAlign.center,
+                    ),
+                    ldSpacerM,
                     LdTextP(
                       """${SecLocalizations.of(context).readingsLeft} ${remainingScans ?? 'Unknown'}""",
                       textAlign: TextAlign.center,

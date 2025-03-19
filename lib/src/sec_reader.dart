@@ -451,7 +451,7 @@ class SECReader extends CmdWrapper {
 
   /// Get model info. Returns the result if successful.
   /// Triggers an error if failed.
-  Future<UrpSecModelInfo> getModelInfo() async {
+  Future<List<UrpSecModelInfo>> getModelInfo() async {
     final cmd = UrpSecDeviceCommand(
       command: UrpSecCommand.urpSecGetModelInfo,
     );
@@ -460,7 +460,8 @@ class SECReader extends CmdWrapper {
     if (!res.hasPayload()) {
       throw Exception('Failed to get model info');
     }
-    return UrpSecModelInfo.fromBuffer(res.payload);
+    final urpSecModels = UrpSecModels.fromBuffer(res.payload);
+    return urpSecModels.models;
   }
   
 }

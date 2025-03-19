@@ -201,11 +201,11 @@ class _ScanningView extends StatelessWidget {
                       textAlign: TextAlign.center,
                     ),
                     LdTextP(
-                      SecLocalizations.of(context).distanceHint,
+                      installedModels,
                       textAlign: TextAlign.center,
                     ),
                     LdTextP(
-                      installedModels,
+                      SecLocalizations.of(context).distanceHint,
                       textAlign: TextAlign.center,
                     ),
                     ldSpacerL,

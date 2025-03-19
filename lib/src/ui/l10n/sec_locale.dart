@@ -98,7 +98,7 @@ abstract class SecLocalizations {
   /// No description provided for @successfullyVerfied.
   ///
   /// In en, this message translates to:
-  /// **'Successfully verified'**
+  /// **'Successfully verified with '**
   String get successfullyVerfied;
 
   /// No description provided for @primeFailed.
@@ -208,6 +208,24 @@ abstract class SecLocalizations {
   /// In en, this message translates to:
   /// **'{seconds}s\nleft'**
   String secondsLeft(Object seconds);
+
+  /// No description provided for @incompatibleFirmware.
+  ///
+  /// In en, this message translates to:
+  /// **'Firmware incompatible. Please update!'**
+  String get incompatibleFirmware;
+
+  /// No description provided for @tokenFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Getting new token failed!'**
+  String get tokenFailed;
+
+  /// No description provided for @readingsLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'Readings left with current token:'**
+  String get readingsLeft;
 }
 
 class _SecLocalizationsDelegate extends LocalizationsDelegate<SecLocalizations> {

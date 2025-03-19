@@ -1,11 +1,9 @@
-import 'dart:typed_data';
-
+import 'package:example/virtual_strategy.dart';
 import 'package:flutter/material.dart';
 import 'package:mtrust_sec_kit/mtrust_sec_kit.dart';
 
-import 'package:mtrust_urp_virtual_strategy/mtrust_urp_virtual_strategy.dart';
-
 import 'package:liquid_flutter/liquid_flutter.dart';
+import 'package:mtrust_urp_ble_strategy/mtrust_urp_ble_strategy.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -27,26 +25,6 @@ void main() {
   ));
 }
 
-extension PrependLength on Uint8List {
-  Uint8List prependLength() {
-    return Uint8List.fromList(_int16ToBytes(length) + this);
-  }
-
-  Uint8List _int16ToBytes(int value) {
-    if (value < -32768 || value > 32767) {
-      throw ArgumentError('Value must be between -32768 and 32767.');
-    }
-
-    final bytes = Uint8List(2);
-
-    // Store the two bytes in little-endian order
-    bytes[0] = (value >> 8) & 0xFF; // Upper byte
-    bytes[1] = value & 0xFF; // Lower byte
-
-    return bytes;
-  }
-}
-
 class MainApp extends StatefulWidget {
   const MainApp({super.key});
 
@@ -55,33 +33,15 @@ class MainApp extends StatefulWidget {
 }
 
 class _MainAppState extends State<MainApp> {
-  final _virtualStrategy = UrpVirtualStrategy((UrpRequest request) async {
-    final payload = UrpSecCommandWrapper.fromBuffer(request.payload);
-    final result = switch (payload.deviceCommand.command) {
-      (UrpSecCommand.urpSecPrime) => UrpResponse(),
-      (UrpSecCommand.urpSecStartMeasurement) => UrpResponse(
-          payload: UrpSecMeasurement(
-            nonce: 12,
-            readerId: "foo",
-            signature: "bar",
-          ).writeToBuffer(),
-        ),
-      _ => switch (payload.coreCommand.command) {
-          (UrpCommand.urpOff) => UrpResponse(),
-          _ => throw Exception("Command not supported"),
-        },
-    };
+  bool _canDismiss = true;
 
-    await Future.delayed(const Duration(seconds: 2));
+  final UrpBleStrategy _bleStrategy = UrpBleStrategy();
 
-    return result;
-  });
-
-  //late final _bleStrategy = UrpBleStrategy();
+  bool _useVirtual = false;
 
   @override
   void initState() {
-    _virtualStrategy.createVirtualReader(FoundDevice(
+    virtualStrategy.createVirtualReader(FoundDevice(
       name: "SEC-000123",
       type: UrpDeviceType.urpSec,
       address: "00:00:00:00:00:00",
@@ -89,13 +49,11 @@ class _MainAppState extends State<MainApp> {
     super.initState();
   }
 
-  // Will be called if a verification was successful.
-  void onVerificationDone(/*Measurement content*/) async {
-    // Get auth token
+  @override
+  void dispose() {
+    _bleStrategy.dispose();
+    super.dispose();
   }
-
-  // Will be called if a verification failed.
-  void onVerificationFailed() {}
 
   @override
   Widget build(BuildContext context) {
@@ -108,25 +66,48 @@ class _MainAppState extends State<MainApp> {
           ),
         ),
         body: SafeArea(
-          child: Column(mainAxisAlignment: MainAxisAlignment.end, children: [
-            Container(
-              width: double.infinity,
-            ),
-            SecSheet(
-              strategy: _virtualStrategy,
-              payload: "",
-              onVerificationDone: (measurement) {},
-              onVerificationFailed: () {},
-              builder: (context, openSheet) {
+          child: LdAutoSpace(children: [
+            LdToggle(
+                label: "Use virtual reader",
+                checked: _useVirtual,
+                onChanged: (value) {
+                  setState(() {
+                    _useVirtual = value;
+                  });
+                }),
+            LdToggle(
+                label: "User can dismiss modal",
+                checked: _canDismiss,
+                onChanged: (value) {
+                  setState(() {
+                    _canDismiss = value;
+                  });
+                }),
+            SecModalBuilder(
+              canDismiss: _canDismiss,
+              turnOffOnClose: false,
+              disconnectOnClose: true,
+              strategy: _useVirtual ? virtualStrategy : _bleStrategy,
+              payload: "<example payload>",
+              onDismiss: () {
+                debugPrint("Dismissed");
+              },
+              onVerificationDone: (measurement) {
+                debugPrint("Verification done ${measurement.measurement}");
+              },
+              onVerificationFailed: () {
+                debugPrint("Verification failed");
+              },
+              builder: (context, openModal) {
                 return LdButton(
-                  onPressed: openSheet,
-                  child: const Text("Open SEC Sheet"),
+                  onPressed: openModal,
+                  size: LdSize.l,
+                  child: const Text("Start verification"),
                 );
               },
             ),
-            ldSpacerL,
           ]),
-        ),
+        ).padL(),
       ),
     );
   }

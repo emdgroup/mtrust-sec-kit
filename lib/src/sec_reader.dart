@@ -2,45 +2,59 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:mtrust_sec_kit/mtrust_sec_kit.dart';
-import 'package:mtrust_sec_kit/src/sec_reader_exception.dart';
 
 /// [SECReader] is a class that provides a high-level API to interact with
 /// a SEC reader.
 class SECReader extends CmdWrapper {
   /// Creates a new instance of [SECReader]
-  /// [connectionStrategy] is the strategy to use for the connection.
+  /// [connectionStrategy] is the connectionStrategy to use for the connection.
   /// [target] is the target device to connect to. it defaults to a
   /// [UrpDeviceType.urpSec] reader.
   /// [origin] is the origin device. It defaults to a [UrpDeviceType.urpMobile]
   /// on iOS and Android else it will use [UrpDeviceType.urpDesktop].
   SECReader({
-    required ConnectionStrategy connectionStrategy,
+    required this.connectionStrategy,
     UrpDeviceIdentifier? target,
     UrpDeviceIdentifier? origin,
-  }) : super(
-          strategy: connectionStrategy,
-          target: target ??
+  }) : target = target ??
               UrpDeviceIdentifier(
                 deviceClass: UrpDeviceClass.urpReader,
                 deviceType: UrpDeviceType.urpSec,
               ),
-          origin: origin ??
-              UrpDeviceIdentifier(
-                deviceClass: UrpDeviceClass.urpHost,
-                deviceType: (Platform.isAndroid || Platform.isIOS)
-                    ? UrpDeviceType.urpMobile
-                    : UrpDeviceType.urpDesktop,
-              ),
-        );
+        origin = origin ??
+            UrpDeviceIdentifier(
+              deviceClass: UrpDeviceClass.urpHost,
+              deviceType: (Platform.isAndroid || Platform.isIOS)
+                  ? UrpDeviceType.urpMobile
+                  : UrpDeviceType.urpDesktop,
+            );
 
-  /// Find and connect to a SEC reader using the given [strategy].
+    /// The connectionStrategy used to connect the device.
+    final ConnectionStrategy connectionStrategy;
+
+    /// The target device.
+    final UrpDeviceIdentifier target;
+
+    /// The origin device.
+    final UrpDeviceIdentifier origin;
+
+    int _requestTokenAmount = 10;
+
+    /// Sets the amount of tokens to be requested if the device has no more
+    /// tokens available. The default is 10.
+    void setTokenAmount(int amount) {
+      _requestTokenAmount = amount;
+      notifyListeners();
+    }
+
+  /// Find and connect to a SEC reader using the given [connectionStrategy].
   /// If [deviceAddress] is provided, it will try to connect to the reader
   /// with the given address.
   static Future<SECReader> findAndConnect(
-    ConnectionStrategy strategy, {
+    ConnectionStrategy connectionStrategy, {
     String? deviceAddress,
   }) async {
-    final connceted = await strategy.findAndConnectDevice(
+    final connceted = await connectionStrategy.findAndConnectDevice(
       readerTypes: {UrpDeviceType.urpSec},
       deviceAddress: deviceAddress,
     );
@@ -49,24 +63,24 @@ class SECReader extends CmdWrapper {
       throw SecReaderException(message: 'Failed to connect to reader');
     }
 
-    return SECReader(connectionStrategy: strategy);
+    return SECReader(connectionStrategy: connectionStrategy);
   }
 
   /// Returns a list of all available [UrpDeviceType.urpSec] and
-  /// [UrpDeviceType.urpSecQc] reader
-  static Stream<FoundDevice> findReaders(ConnectionStrategy strategy) {
-    return strategy.findDevices({
+  /// [UrpDeviceType.urpSecQc] reader.
+  static Stream<FoundDevice> findReaders(ConnectionStrategy connectionStrategy){
+    return connectionStrategy.findDevices({
       UrpDeviceType.urpSec,
       UrpDeviceType.urpSecQc,
     });
   }
 
-  /// Connect to a [FoundDevice]
+  /// Connect to a [FoundDevice].
   Future<SECReader> connectTo(
     FoundDevice reader,
-    ConnectionStrategy strategy,
+    ConnectionStrategy connectionStrategy,
   ) async {
-    final connected = await strategy.findAndConnectDevice(
+    final connected = await connectionStrategy.findAndConnectDevice(
       readerTypes: {reader.type},
       deviceAddress: reader.address,
     );
@@ -77,85 +91,377 @@ class SECReader extends CmdWrapper {
       );
     }
 
-    return SECReader(connectionStrategy: strategy);
+    return SECReader(connectionStrategy: connectionStrategy);
   }
 
-  /// Prepares (primes) a measurement for the given [payload]
-  Future<void> prime(String payload) async {
-    await strategy.addQueue(
+  Future<UrpResponse> _addCommandToQueue({
+    UrpCoreCommand? coreCommand, 
+    UrpSecDeviceCommand? deviceCommand,
+  }) async {
+    return connectionStrategy.addQueue(
       UrpSecCommandWrapper(
-        deviceCommand: UrpSecDeviceCommand(
-          command: UrpSecCommand.urpSecPrime,
-          primeParameters: UrpSecPrimeParameters(payload: payload),
-        ),
-      ).writeToBuffer(),
-      super.target,
-      super.origin,
+        coreCommand: coreCommand,
+        deviceCommand: deviceCommand,
+      ).writeToBuffer(), 
+      target, 
+      origin,
     );
   }
 
-  /// Unprime a measurement
+  /// Pings the device.
+  @override
+  Future<void> ping() async {
+    final cmd = UrpCoreCommand(
+      command: UrpCommand.urpPing,
+    );
+    await _addCommandToQueue(coreCommand: cmd);
+  }
+
+  /// Returns the device info. Throws an error if failed.
+  @override
+  Future<UrpDeviceInfo> info() async {
+    final cmd = UrpCoreCommand(
+      command: UrpCommand.urpGetInfo,
+    );
+    final res = await _addCommandToQueue(coreCommand: cmd);
+
+    if (!res.hasPayload()) {
+      throw SecReaderException(message: 'Failed to get info');
+    }
+    return UrpDeviceInfo.fromBuffer(res.payload);
+  }
+
+  /// Returns the power state of the device. Throws an error if failed.
+  @override
+  Future<UrpPowerState> getPower() async {
+    final cmd = UrpCoreCommand(
+      command: UrpCommand.urpGetPower,
+    );
+    final res = await _addCommandToQueue(coreCommand: cmd);
+
+    if(!res.hasPayload()) {
+      throw SecReaderException(message: 'Failed to get power state');
+    }
+    return UrpPowerState.fromBuffer(res.payload);
+  }
+
+  /// Sets the name of the device.
+  @override
+  Future<void> setName(String? name) async {
+    final cmd = UrpCoreCommand(
+      command: UrpCommand.urpSetName,
+      setNameParameters: UrpSetNameParameters(name: name),
+    );
+    await _addCommandToQueue(coreCommand: cmd);
+  }
+
+  /// Returns the devic name. Throws an error if failed.
+  @override
+  Future<UrpDeviceName> getName() async {
+    final cmd = UrpCoreCommand(
+      command: UrpCommand.urpGetName,
+    );
+    final res = await _addCommandToQueue(coreCommand: cmd);
+
+    if(!res.hasPayload()) {
+      throw SecReaderException(message: 'Failed to get name');
+    }
+    return UrpDeviceName.fromBuffer(res.payload);
+  }
+
+  /// Pair the device.
+  @override
+  Future<void> pair() async {
+    final cmd = UrpCoreCommand(
+      command: UrpCommand.urpPair,
+    );
+    await _addCommandToQueue(coreCommand: cmd);
+  }
+
+  /// Unpair the device.
+  @override
+  Future<void> unpair() async {
+    final cmd = UrpCoreCommand(
+      command: UrpCommand.urpUnpair,
+    );
+    await _addCommandToQueue(coreCommand: cmd);
+  }
+
+  /// Starts the DFU mode of the device.
+  @override
+  Future<void> startDFU() async {
+    final cmd = UrpCoreCommand(
+      command: UrpCommand.urpStartDfu,
+    );
+    await _addCommandToQueue(coreCommand: cmd);
+  }
+
+  /// Stops the DFU mode of the device.
+  @override
+  Future<void> stopDFU() async {
+    final cmd = UrpCoreCommand(
+      command: UrpCommand.urpStopDfu,
+    );
+    await _addCommandToQueue(coreCommand: cmd);
+  }
+
+  /// Puts the device to sleep mode. This will disconnect the device.
+  @override
+  Future<void> sleep() async {
+    final cmd = UrpCoreCommand(
+      command: UrpCommand.urpSleep,
+    );
+    await _addCommandToQueue(coreCommand: cmd);
+  }
+
+  /// Turns the device off. This will disconnect the device.
+  @override
+  Future<void> off() async {
+    final cmd = UrpCoreCommand(
+      command: UrpCommand.urpOff,
+    );
+    await _addCommandToQueue(coreCommand: cmd);
+  }
+
+  /// Reboots the device. This will disconnect the device.
+  @override
+  Future<void> reboot() async {
+    final cmd = UrpCoreCommand(
+      command: UrpCommand.urpReboot,
+    );
+    await _addCommandToQueue(coreCommand: cmd);
+  }
+
+  /// Prevents the device from going to sleep mode.
+  @override
+  Future<void> stayAwake() async {
+    final cmd = UrpCoreCommand(
+      command: UrpCommand.urpStayAwake,
+    );
+    await _addCommandToQueue(coreCommand: cmd);
+  }
+
+  /// Returns the public key of the device. Throws an error if failed.
+  @override
+  Future<UrpPublicKey> getPublicKey() async {
+    final cmd = UrpCoreCommand(
+      command: UrpCommand.urpGetPublicKey,
+    );
+    final res = await _addCommandToQueue(coreCommand: cmd);
+
+    if(!res.hasPayload()) {
+      throw SecReaderException(message: 'Failed to get public key');
+    }
+    return UrpPublicKey.fromBuffer(res.payload);
+  }
+
+  /// Return the device id. Throws an error if failed.
+  @override
+  Future<UrpDeviceId> getDeviceId() async {
+    final cmd = UrpCoreCommand(
+      command: UrpCommand.urpGetDeviceId,
+    );
+    final res = await _addCommandToQueue(coreCommand: cmd);
+
+    if(!res.hasPayload()) {
+      throw SecReaderException(message: 'Failed to get public key');
+    }
+    return UrpDeviceId.fromBuffer(res.payload);
+  }
+
+  /// Identify reader. Triggers the LED to identify the device.
+  @override
+  Future<void> identify() async {
+    final cmd = UrpCoreCommand(
+      command: UrpCommand.urpIdentify,
+    );
+    await _addCommandToQueue(coreCommand: cmd);
+  }
+
+  /// Connect AP. Throws an error if failed.
+  @override
+  Future<UrpWifiState> connectAP(String ssid, String apk) async {
+    final cmd = UrpCoreCommand(
+      command: UrpCommand.urpConnectAp,
+      apParameters: UrpApParamters(ssid: ssid, password: apk),
+    );
+    final res = await _addCommandToQueue(coreCommand: cmd);
+
+    if(!res.hasPayload()) {
+      throw SecReaderException(message: 'Failed to connect to AP');
+    }
+    return UrpWifiState.fromBuffer(res.payload);
+  }
+  
+  /// Disconnect AP.
+  @override
+  Future<void> disconnectAP() async {
+    final cmd = UrpCoreCommand(
+      command: UrpCommand.urpDisconnectAp,
+    );
+    await _addCommandToQueue(coreCommand: cmd);
+  }
+  
+  /// Start AP. Throws an error if failed.
+  @override
+  Future<UrpWifiState> startAP(String ssid, String apk) async {
+    final cmd = UrpCoreCommand(
+      command: UrpCommand.urpStartAp,
+      apParameters: UrpApParamters(ssid: ssid, password: apk),
+    );
+    final res = await _addCommandToQueue(coreCommand: cmd);
+
+    if(!res.hasPayload()) {
+      throw SecReaderException(message: 'Failed to start AP');
+    }
+    return UrpWifiState.fromBuffer(res.payload);
+  }
+  
+  /// Stop AP.
+  @override
+  Future<void> stopAP() async {
+    final cmd = UrpCoreCommand(
+      command: UrpCommand.urpStopAp,
+    );
+    await _addCommandToQueue(coreCommand: cmd);
+  }
+
+  /// Prepares (primes) a measurement for the given [payload].
+  Future<UrpSecPrimeResponse?> prime(String payload) async {
+    final cmd = UrpSecDeviceCommand(
+      command: UrpSecCommand.urpSecPrime,
+      primeParameters: UrpSecPrimeParameters(payload: payload),
+    );
+    try {
+      final res = await _addCommandToQueue(deviceCommand: cmd);
+      return UrpSecPrimeResponse.fromBuffer(res.payload);
+    } catch (e) {
+      if(e is DeviceError) {
+        if(e.errorCode == 4) {
+          final publicKey = await getPublicKey();
+          final oldToken = await requestToken();
+          try {
+            final newToken = await getToken(oldToken, publicKey);
+            if(newToken == null) {
+              throw SecReaderException(
+                message: 'Failed to get new token!',
+                type: SecReaderExceptionType.tokenFailed,
+              );
+            }
+            await setToken(newToken);
+            return prime(payload);
+          } catch (e) {
+            rethrow;
+          }
+        } else {
+          rethrow;
+        }
+      }
+      return null;
+    }
+  }
+
+  /// Request the device to send a new token request
+  Future<UrpSecureToken> requestToken() async {
+    final cmd = UrpSecDeviceCommand(
+      command: UrpSecCommand.urpSecRequestToken,
+      tokenRequest: UrpTokenRequest(
+        amount: _requestTokenAmount,
+      ),
+    );
+    final res = await _addCommandToQueue(
+      deviceCommand: cmd,
+    );
+
+    if(!res.hasPayload()) {
+      throw SecReaderException(
+        message: 'Failed to request token!',
+        type: SecReaderExceptionType.tokenFailed,
+      );
+    }
+    return UrpSecureToken.fromBuffer(res.payload);
+  }
+
+  /// Install a new token after a token request on the device
+  Future<void> setToken(UrpSecureToken token) async {
+    final cmd = UrpSecDeviceCommand(
+      command: UrpSecCommand.urpSecSetToken,
+      secureToken: token,
+    );
+    await _addCommandToQueue(deviceCommand: cmd);
+  }
+
+  /// Request the currently installed token from the device
+  Future<UrpSecureToken> getCurrentToken() async {
+    final cmd = UrpSecDeviceCommand(
+      command: UrpSecCommand.urpSecGetToken,
+    );
+    final res = await _addCommandToQueue(
+      deviceCommand: cmd,
+    );
+
+    if(!res.hasPayload()) {
+      throw SecReaderException(
+        message: 'Failed to get current token!',
+        type: SecReaderExceptionType.tokenFailed,
+      );
+    }
+    return UrpSecureToken.fromBuffer(res.payload);
+  }
+
+  /// Unprime a measurement.
   Future<void> unprime() async {
-    await strategy.addQueue(
-      UrpSecCommandWrapper(
-        deviceCommand: UrpSecDeviceCommand(
-          command: UrpSecCommand.urpSecUnprime,
-        ),
-      ).writeToBuffer(),
-      super.target,
-      super.origin,
+    final cmd = UrpSecDeviceCommand(
+      command: UrpSecCommand.urpSecUnprime,
     );
+    await _addCommandToQueue(deviceCommand: cmd);
   }
 
   /// Measures until detection. Returns the result if successful.
   /// Triggers an error if failed.
-  Future<UrpSecMeasurement> startMeasurement() async {
-    final result = await strategy.addQueue(
-      UrpSecCommandWrapper(
-        deviceCommand: UrpSecDeviceCommand(
-          command: UrpSecCommand.urpSecStartMeasurement,
-        ),
-      ).writeToBuffer(),
-      super.target,
-      super.origin,
-      timeout: const Duration(seconds: 30),
+  Future<UrpSecSecureMeasurement> startMeasurement() async {
+    final cmd = UrpSecDeviceCommand(
+      command: UrpSecCommand.urpSecStartMeasurement,
     );
+    final res = await _addCommandToQueue(deviceCommand: cmd);
 
-    if (!result.hasPayload()) {
-      throw Exception('Failed to measure.');
+    if (!res.hasPayload()) {
+      throw SecReaderException(
+        message: 'Failed to measure!',
+        type: SecReaderExceptionType.measurementFailed,
+      );
     }
-    return UrpSecMeasurement.fromBuffer(result.payload);
+    try {
+      return UrpSecSecureMeasurement.fromBuffer(res.payload);
+    } catch (e) {
+      throw SecReaderException(
+        message: 'Incompatible device firmware version. Please update!',
+        type: SecReaderExceptionType.incompatibleFirmware,
+      );
+    }
   }
 
   /// Stop measurement
   Future<void> stopMeasurement() async {
-    await strategy.addQueue(
-      UrpSecCommandWrapper(
-        deviceCommand: UrpSecDeviceCommand(
-          command: UrpSecCommand.urpSecStopMeasurement,
-        ),
-      ).writeToBuffer(),
-      super.target,
-      super.origin,
+    final cmd = UrpSecDeviceCommand(
+      command: UrpSecCommand.urpSecStopMeasurement,
     );
+    await _addCommandToQueue(deviceCommand: cmd);
   }
 
   /// Get model info. Returns the result if successful.
   /// Triggers an error if failed.
-  Future<UrpSecModelInfo> getModelInfo() async {
-    final res = await strategy.addQueue(
-      UrpSecCommandWrapper(
-        deviceCommand: UrpSecDeviceCommand(
-          command: UrpSecCommand.urpSecGetModelInfo,
-        ),
-      ).writeToBuffer(),
-      target,
-      origin,
+  Future<List<UrpSecModelInfo>> getModelInfo() async {
+    final cmd = UrpSecDeviceCommand(
+      command: UrpSecCommand.urpSecGetModelInfo,
     );
+    final res = await _addCommandToQueue(deviceCommand: cmd);
 
     if (!res.hasPayload()) {
       throw Exception('Failed to get model info');
     }
-    return UrpSecModelInfo.fromBuffer(res.payload);
+    final urpSecModels = UrpSecModels.fromBuffer(res.payload);
+    return urpSecModels.models;
   }
+  
 }

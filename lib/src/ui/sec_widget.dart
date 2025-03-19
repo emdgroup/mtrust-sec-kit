@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_dynamic_calls
+
 import 'package:flutter/material.dart';
 import 'package:liquid_flutter/liquid_flutter.dart';
 import 'package:mtrust_sec_kit/mtrust_sec_kit.dart';
@@ -14,6 +16,7 @@ class SecWidget extends StatelessWidget {
     required this.onVerificationDone,
     required this.onVerificationFailed,
     this.storageAdapter,
+    this.tokenAmount,
     super.key,
   });
 
@@ -28,32 +31,59 @@ class SecWidget extends StatelessWidget {
   final String payload;
 
   /// Will be called if a verification was successful.
-  final Future<void> Function(UrpSecMeasurement measurement) onVerificationDone;
+  final Future<void> Function(
+    UrpSecSecureMeasurement measurement,
+  ) onVerificationDone;
 
   /// Will be called if a verification failed.
   final Future<void> Function() onVerificationFailed;
 
+  /// Amount of token to be requested on token refresh.
+  final int? tokenAmount;
+
   @override
   Widget build(BuildContext context) {
+
+    var models = <UrpSecModelInfo>[];
+
     return DeviceConnector(
       connectionStrategy: strategy,
       storageAdapter: storageAdapter,
       connectedBuilder: (BuildContext context) {
-        return LdSubmit<bool>(
-          config: LdSubmitConfig<bool>(
+        return LdSubmit<UrpSecPrimeResponse?>(
+          config: LdSubmitConfig<UrpSecPrimeResponse?>(
             loadingText: SecLocalizations.of(context).primingTitle,
             autoTrigger: true,
             action: () async {
               final reader = SECReader(
                 connectionStrategy: strategy,
               );
-              await reader.prime(payload);
-              return true;
+              models = await reader.getModelInfo();
+              if(tokenAmount != null) {
+                reader.setTokenAmount(tokenAmount!);
+              }
+              return reader.prime(payload);
             },
           ),
-          builder: LdSubmitCustomBuilder<bool>(
+          builder: LdSubmitCustomBuilder<UrpSecPrimeResponse?>(
             builder: (context, controller, stateType) {
               if (stateType == LdSubmitStateType.error) {
+                var message = controller.state.error?.message 
+                              ?? 'Unknown error';
+                if(controller.state.error?.exception.runtimeType 
+                    == SecReaderException) {
+                  final error = controller.state.error?.exception 
+                                as SecReaderException;
+                  if(error.type == SecReaderExceptionType.tokenFailed) {
+                    message = SecLocalizations.of(context).tokenFailed;
+                  }
+                }
+                if(controller.state.error?.exception.runtimeType 
+                    == ApiException) {
+                  final error = controller.state.error?.exception 
+                                as ApiException;
+                  message = error.errorMessage;
+                }
                 return LdAutoSpace(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
@@ -62,7 +92,7 @@ class SecWidget extends StatelessWidget {
                       textAlign: TextAlign.center,
                     ),
                     LdTextP(
-                      controller.state.error?.moreInfo ?? 'Unknown error',
+                      message,
                     ),
                     Expanded(
                       child: SecReaderVisualization(
@@ -99,7 +129,9 @@ class SecWidget extends StatelessWidget {
 
               return _ScanningView(
                 strategy: strategy,
-                onVerificationDone: (UrpSecMeasurement measurement) async {
+                onVerificationDone: (
+                  UrpSecSecureMeasurement measurement,
+                ) async {
                   controller.reset();
                   await onVerificationDone(measurement);
                 },
@@ -107,6 +139,8 @@ class SecWidget extends StatelessWidget {
                   controller.reset();
                   await onVerificationFailed();
                 },
+                remainingScans: controller.state.result?.gsa,
+                models: models,
               );
             },
           ),
@@ -122,17 +156,23 @@ class _ScanningView extends StatelessWidget {
     required this.strategy,
     required this.onVerificationDone,
     required this.onVerificationFailed,
+    this.remainingScans,
+    this.models,
   });
 
+  final int? remainingScans;
   final ConnectionStrategy strategy;
-  final Future<void> Function(UrpSecMeasurement measurement) onVerificationDone;
+  final Future<void> Function(
+    UrpSecSecureMeasurement measurement,
+  ) onVerificationDone;
   final Future<void> Function() onVerificationFailed;
+  final List<UrpSecModelInfo>? models;
 
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: LdSubmit<UrpSecMeasurement>(
-        config: LdSubmitConfig<UrpSecMeasurement>(
+      child: LdSubmit<UrpSecSecureMeasurement>(
+        config: LdSubmitConfig<UrpSecSecureMeasurement>(
           loadingText: SecLocalizations.of(context).scanning,
           submitText: SecLocalizations.of(context).startScan,
           timeout: const Duration(seconds: 35),
@@ -143,15 +183,25 @@ class _ScanningView extends StatelessWidget {
             return reader.startMeasurement();
           },
         ),
-        builder: LdSubmitCustomBuilder<UrpSecMeasurement>(
+        builder: LdSubmitCustomBuilder<UrpSecSecureMeasurement>(
           builder: (context, measurementController, measurementStateType) {
-            return switch (measurementStateType) {
-              (LdSubmitStateType.loading) => LdAutoSpace(
+
+            final installedModels = models != null
+              ? models!.map((model) => '${model.modelId} ${model.version}').join(', ')
+              : '';
+
+            switch (measurementStateType) {
+              case (LdSubmitStateType.loading):
+                return LdAutoSpace(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   animate: true,
                   children: [
-                    LdTextH(
+                    LdTextHs(
                       SecLocalizations.of(context).scanning,
+                      textAlign: TextAlign.center,
+                    ),
+                    LdTextP(
+                      installedModels,
                       textAlign: TextAlign.center,
                     ),
                     LdTextP(
@@ -166,15 +216,21 @@ class _ScanningView extends StatelessWidget {
                     const CountDownProgress(),
                     ldSpacerL,
                   ],
-                ),
-              (LdSubmitStateType.result) => LdAutoSpace(
+                );
+              case (LdSubmitStateType.result):
+
+                final result = measurementController.state.result!;
+                final model = result.measurement.result.first.modelId;
+
+                return LdAutoSpace(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   animate: true,
                   children: [
                     LdTextHs(
-                      SecLocalizations.of(context).successfullyVerfied,
+                      SecLocalizations.of(context).successfullyVerfied + model,
                       textAlign: TextAlign.center,
                     ),
+                    ldSpacerL,
                     ldSpacerL,
                     Expanded(
                       child: SecReaderVisualization(
@@ -187,27 +243,36 @@ class _ScanningView extends StatelessWidget {
                       ),
                     ),
                     ldSpacerL,
-                    LdButtonSuccess(
+                    LdButton(
                       onPressed: () async {
                         await onVerificationDone(
-                          measurementController.state.result!,
+                          result,
                         );
                       },
                       loadingText: SecLocalizations.of(context).disconnecting,
-                      context: context,
                       child: Text(
                         SecLocalizations.of(context).done,
                       ),
                     ),
                     ldSpacerL,
                   ],
-                ),
-              (LdSubmitStateType.idle) => LdAutoSpace(
+                );
+              case (LdSubmitStateType.idle):
+                return LdAutoSpace(
                   animate: true,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     LdTextHs(
                       SecLocalizations.of(context).readyToScan,
+                      textAlign: TextAlign.center,
+                    ),
+                    LdTextP(
+                      installedModels,
+                      textAlign: TextAlign.center,
+                    ),
+                    ldSpacerM,
+                    LdTextP(
+                      """${SecLocalizations.of(context).readingsLeft} ${remainingScans ?? 'Unknown'}""",
                       textAlign: TextAlign.center,
                     ),
                     LdTextP(
@@ -227,8 +292,19 @@ class _ScanningView extends StatelessWidget {
                       ),
                     ),
                   ],
-                ).padL(),
-              (LdSubmitStateType.error) => LdAutoSpace(
+                ).padL();
+              case (LdSubmitStateType.error): 
+                var message = SecLocalizations.of(context)
+                              .verificationFailedMessage;
+                if(measurementController.state.error?.exception.runtimeType 
+                    == SecReaderExceptionType) {
+                  final error = measurementController.state.error?.exception 
+                                as SecReaderException;
+                  if(error.type == SecReaderExceptionType.incompatibleFirmware){
+                    message = SecLocalizations.of(context).incompatibleFirmware;
+                  }
+                }
+                return LdAutoSpace(
                   animate: true,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
@@ -237,7 +313,7 @@ class _ScanningView extends StatelessWidget {
                       textAlign: TextAlign.center,
                     ),
                     LdTextP(
-                      SecLocalizations.of(context).verificationFailedMessage,
+                      message,
                       textAlign: TextAlign.center,
                     ),
                     Expanded(
@@ -255,8 +331,8 @@ class _ScanningView extends StatelessWidget {
                       ),
                     ),
                   ],
-                ).padL(),
-            };
+                ).padL();
+            }
           },
         ),
       ),

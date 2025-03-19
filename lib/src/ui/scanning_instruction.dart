@@ -55,6 +55,7 @@ class _ScanningInstructionState extends State<ScanningInstruction>
   @override
   Widget build(BuildContext context) {
     final theme = LdTheme.of(context, listen: true);
+
     return Stack(
       children: [
         AnimatedBuilder(
@@ -143,10 +144,10 @@ class _ScanningInstructionState extends State<ScanningInstruction>
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  theme.surface,
-                  theme.surface.withAlpha(0),
-                  theme.surface.withAlpha(0),
-                  theme.surface,
+                  theme.background,
+                  theme.background.withAlpha(0),
+                  theme.background.withAlpha(0),
+                  theme.background,
                 ],
                 stops: const [0, 0.1, 0.9, 1],
               ),

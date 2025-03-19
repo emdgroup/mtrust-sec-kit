@@ -7,7 +7,7 @@ class SecLocalizationsDe extends SecLocalizations {
   SecLocalizationsDe([String locale = 'de']) : super(locale);
 
   @override
-  String get successfullyVerfied => 'Verifizierung erfolgreich';
+  String get successfullyVerfied => 'Verifizierung erfolgreich mit ';
 
   @override
   String get primeFailed => 'Failed to prepare for scan';
@@ -64,4 +64,13 @@ class SecLocalizationsDe extends SecLocalizations {
   String secondsLeft(Object seconds) {
     return '${seconds}s\nverbleibend';
   }
+
+  @override
+  String get incompatibleFirmware => 'Inkompatible Firmware. Bitte Update durchführen!';
+
+  @override
+  String get tokenFailed => 'Neuen Token abrufen fehlgeschlagen!';
+
+  @override
+  String get readingsLeft => 'Verbleibende Messungen für aktuellen Token:';
 }

@@ -12,9 +12,9 @@ dependencies:
   mtrust_sec_kit:
     path: ../
   mtrust_urp_types: ^6.0.0
-  mtrust_urp_ble_strategy: ^9.0.0-13
-  mtrust_urp_virtual_strategy: ^9.0.0-13
-  mtrust_urp_ui: ^9.0.0-13
+  mtrust_urp_ble_strategy: ^9.0.0
+  mtrust_urp_virtual_strategy: ^9.0.0
+  mtrust_urp_ui: ^9.0.0
   liquid_flutter: ^19.0.0
 
 dev_dependencies:

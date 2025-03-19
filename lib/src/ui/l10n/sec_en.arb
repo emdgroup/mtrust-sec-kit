@@ -1,6 +1,6 @@
 {
     "@@locale": "en",
-    "successfullyVerfied": "Successfully verified",
+    "successfullyVerfied": "Successfully verified with ",
     "primeFailed": "Failed to prepare for scan",
     "verificationFailed": "Verification failed",
     "verificationFailedMessage": "Could not detect security pigment.",

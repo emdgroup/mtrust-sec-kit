@@ -7,7 +7,7 @@ class SecLocalizationsEn extends SecLocalizations {
   SecLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get successfullyVerfied => 'Successfully verified';
+  String get successfullyVerfied => 'Successfully verified with ';
 
   @override
   String get primeFailed => 'Failed to prepare for scan';

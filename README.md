@@ -26,20 +26,11 @@ Add the `mtrust_sec_kit` to your Flutter project via the pub add command
 ```
 flutter pub add mtrust_sec_kit
 ```
-or manually add it to your `pubspec.yaml`
-
-```yaml
-dependencies:
-  mtrust_sec_kit: ˆ1.0.0
-```
 
 SEC-Kit can work with different URP Connection Strategy. The default for SEC Readers is BLE. 
 Add the ble connection strategy to your project by including it in your `pubspec.yaml` file.
-```yaml
-dependencies:
-  mtrust_sec_kit: ˆ1.0.0
-  # Add the BLE connection strategy
-  mtrust_urp_ble_strategy: ˆ8.0.1
+```
+flutter pub add mtrust_urp_ble_strategy
 ```
 
 Please follow the instructions for configuring BLE for your respective platform in the [README](https://github.com/emdgroup/mtrust-urp/blob/main/mtrust_urp_ble_strategy/README.md) of the `urp_ble_strategy`!

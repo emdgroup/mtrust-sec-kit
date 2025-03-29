@@ -43,7 +43,6 @@ class SecWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     var models = <UrpSecModelInfo>[];
 
     return DeviceConnector(
@@ -59,7 +58,7 @@ class SecWidget extends StatelessWidget {
                 connectionStrategy: strategy,
               );
               models = await reader.getModelInfo();
-              if(tokenAmount != null) {
+              if (tokenAmount != null) {
                 reader.setTokenAmount(tokenAmount!);
               }
               return reader.prime(payload);
@@ -68,20 +67,20 @@ class SecWidget extends StatelessWidget {
           builder: LdSubmitCustomBuilder<UrpSecPrimeResponse?>(
             builder: (context, controller, stateType) {
               if (stateType == LdSubmitStateType.error) {
-                var message = controller.state.error?.message 
-                              ?? 'Unknown error';
-                if(controller.state.error?.exception.runtimeType 
-                    == SecReaderException) {
-                  final error = controller.state.error?.exception 
-                                as SecReaderException;
-                  if(error.type == SecReaderExceptionType.tokenFailed) {
+                var message =
+                    controller.state.error?.message ?? 'Unknown error';
+                if (controller.state.error?.exception.runtimeType ==
+                    SecReaderException) {
+                  final error =
+                      controller.state.error?.exception as SecReaderException;
+                  if (error.type == SecReaderExceptionType.tokenFailed) {
                     message = SecLocalizations.of(context).tokenFailed;
                   }
                 }
-                if(controller.state.error?.exception.runtimeType 
-                    == ApiException) {
-                  final error = controller.state.error?.exception 
-                                as ApiException;
+                if (controller.state.error?.exception.runtimeType ==
+                    ApiException) {
+                  final error =
+                      controller.state.error?.exception as ApiException;
                   message = error.errorMessage;
                 }
                 return LdAutoSpace(
@@ -176,6 +175,7 @@ class _ScanningView extends StatelessWidget {
           loadingText: SecLocalizations.of(context).scanning,
           submitText: SecLocalizations.of(context).startScan,
           timeout: const Duration(seconds: 35),
+          autoTrigger: true,
           action: () async {
             final reader = SECReader(
               connectionStrategy: strategy,
@@ -185,10 +185,11 @@ class _ScanningView extends StatelessWidget {
         ),
         builder: LdSubmitCustomBuilder<UrpSecSecureMeasurement>(
           builder: (context, measurementController, measurementStateType) {
-
             final installedModels = models != null
-              ? models!.map((model) => '${model.modelId} ${model.version}').join(', ')
-              : '';
+                ? models!
+                    .map((model) => '${model.modelId} ${model.version}')
+                    .join(', ')
+                : '';
 
             switch (measurementStateType) {
               case (LdSubmitStateType.loading):
@@ -201,14 +202,10 @@ class _ScanningView extends StatelessWidget {
                       textAlign: TextAlign.center,
                     ),
                     LdTextP(
-                      installedModels,
-                      textAlign: TextAlign.center,
-                    ),
-                    LdTextP(
                       SecLocalizations.of(context).distanceHint,
                       textAlign: TextAlign.center,
                     ),
-                    ldSpacerL,
+                    ldSpacerM,
                     const Expanded(
                       child: ScanningInstruction(),
                     ),
@@ -218,16 +215,14 @@ class _ScanningView extends StatelessWidget {
                   ],
                 );
               case (LdSubmitStateType.result):
-
-                final result = measurementController.state.result!;
-                final model = result.measurement.result.first.modelId;
+                final result = measurementController.state.result;
 
                 return LdAutoSpace(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   animate: true,
                   children: [
                     LdTextHs(
-                      SecLocalizations.of(context).successfullyVerfied + model,
+                      SecLocalizations.of(context).successfullyVerfied,
                       textAlign: TextAlign.center,
                     ),
                     ldSpacerL,
@@ -246,9 +241,10 @@ class _ScanningView extends StatelessWidget {
                     LdButton(
                       onPressed: () async {
                         await onVerificationDone(
-                          result,
+                          result!,
                         );
                       },
+                      size: LdSize.l,
                       loadingText: SecLocalizations.of(context).disconnecting,
                       child: Text(
                         SecLocalizations.of(context).done,
@@ -266,11 +262,6 @@ class _ScanningView extends StatelessWidget {
                       SecLocalizations.of(context).readyToScan,
                       textAlign: TextAlign.center,
                     ),
-                    LdTextP(
-                      installedModels,
-                      textAlign: TextAlign.center,
-                    ),
-                    ldSpacerM,
                     LdTextP(
                       """${SecLocalizations.of(context).readingsLeft} ${remainingScans ?? 'Unknown'}""",
                       textAlign: TextAlign.center,
@@ -293,14 +284,15 @@ class _ScanningView extends StatelessWidget {
                     ),
                   ],
                 ).padL();
-              case (LdSubmitStateType.error): 
-                var message = SecLocalizations.of(context)
-                              .verificationFailedMessage;
-                if(measurementController.state.error?.exception.runtimeType 
-                    == SecReaderExceptionType) {
-                  final error = measurementController.state.error?.exception 
-                                as SecReaderException;
-                  if(error.type == SecReaderExceptionType.incompatibleFirmware){
+              case (LdSubmitStateType.error):
+                var message =
+                    SecLocalizations.of(context).verificationFailedMessage;
+                if (measurementController.state.error?.exception.runtimeType ==
+                    SecReaderExceptionType) {
+                  final error = measurementController.state.error?.exception
+                      as SecReaderException;
+                  if (error.type ==
+                      SecReaderExceptionType.incompatibleFirmware) {
                     message = SecLocalizations.of(context).incompatibleFirmware;
                   }
                 }

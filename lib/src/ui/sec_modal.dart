@@ -13,7 +13,7 @@ import 'package:mtrust_sec_kit/src/ui/sec_result.dart';
 /// Provide a [builder] that renders some UI with a callback to open the sheet.
 class SecModalBuilder extends StatelessWidget {
   /// Creates a new instance of [SecModalBuilder]
-  const SecModalBuilder({ 
+  const SecModalBuilder({
     required this.strategy,
     required this.payload,
     required this.onVerificationDone,
@@ -159,8 +159,9 @@ LdModal secModal({
     disableScrolling: true,
     padding: EdgeInsets.zero,
     noHeader: true,
-    showDismissButton: canDismiss,
+    showDismissButton: false,
     userCanDismiss: canDismiss,
+    showDragHandle: false,
     topRadius: topRadius,
     bottomRadius: bottomRadius,
     useSafeArea: useSafeArea,

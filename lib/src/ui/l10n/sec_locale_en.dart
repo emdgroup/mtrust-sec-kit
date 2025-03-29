@@ -1,3 +1,5 @@
+// ignore: unused_import
+import 'package:intl/intl.dart' as intl;
 import 'sec_locale.dart';
 
 // ignore_for_file: type=lint
@@ -7,7 +9,7 @@ class SecLocalizationsEn extends SecLocalizations {
   SecLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get successfullyVerfied => 'Successfully verified with ';
+  String get successfullyVerfied => 'Successfully verified';
 
   @override
   String get primeFailed => 'Failed to prepare for scan';

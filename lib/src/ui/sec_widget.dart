@@ -78,8 +78,7 @@ class SecWidget extends StatelessWidget {
                     message = SecLocalizations.of(context).tokenFailed;
                   }
                 }
-                if(controller.state.error?.exception.runtimeType 
-                    == ApiException) {
+                if(controller.state.error?.exception.runtimeType == ApiException) {
                   message = SecLocalizations.of(context).tokenFailed;
                 }
                 return LdAutoSpace(

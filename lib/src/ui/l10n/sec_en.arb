@@ -20,6 +20,6 @@
     "scanning": "Scanning...",
     "secondsLeft": "{seconds}s\nleft",
     "incompatibleFirmware": "Firmware incompatible. Please update!",
-    "tokenFailed": "Getting new token failed!",
+    "tokenFailed": "Failed to prepare for scan. Please make sure you have a working internet connection",
     "readingsLeft": "Readings left with current token:"
 }

@@ -80,9 +80,7 @@ class SecWidget extends StatelessWidget {
                 }
                 if(controller.state.error?.exception.runtimeType 
                     == ApiException) {
-                  final error = controller.state.error?.exception 
-                                as ApiException;
-                  message = error.errorMessage;
+                  message = SecLocalizations.of(context).tokenFailed;
                 }
                 return LdAutoSpace(
                   crossAxisAlignment: CrossAxisAlignment.center,

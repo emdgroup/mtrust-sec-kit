@@ -83,7 +83,7 @@ To utilize SEC-Kit's UI components, incorporate the following providers and port
     ```
 
 In case you do not want to use SEC Kit's UI components, you can control the SEC Reader using the `SecReader` class.
-For more information please refer to [Use SecReader to build custom workflows](#)//TODO:
+For more information please refer to [Use SecReader to build custom workflows](#custom-ui-example-for-ios-10-step-integration)
 
 ### Use the SEC Modal 
 
@@ -109,9 +109,9 @@ To display the SEC Modal, utilize the `SecModalBuilder` widget. It requires a co
 
 To build custom workflows, utilize the `SecReader` class. It requires a connection strategy to handle the connection between the device and the reader.
 
-1. Create a new Flutter application e.g. using VSCode:
+1. Create a new Flutter application:
 ```bash
-Command + Shift + P -> Flutter: New Project -> Empty Application
+flutter create -e my_app
 ```
 
 2. Install flutter dependencies:
@@ -192,7 +192,7 @@ flutter pub add mtrust_sec_kit mtrust_urp_ble_strategy
 9. Great, we are able to connect to our device and disconnect it again. Let's continue with a measurement. Let's add a `measure` method for this:
 ```dart
   Future<UrpSecMeasurement> measure() async {
-    await reader.prime();
+    await reader.prime('example payload');
     final measurement = await reader.startMeasurement();
     print(measurement);
     return measurement.measurement;

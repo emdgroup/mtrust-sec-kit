@@ -69,7 +69,7 @@ class SecLocalizationsDe extends SecLocalizations {
   String get incompatibleFirmware => 'Inkompatible Firmware. Bitte Update durchführen!';
 
   @override
-  String get tokenFailed => 'Neuen Token abrufen fehlgeschlagen!';
+  String get tokenFailed => 'Die Vorbereitung für den Scan ist fehlgeschlagen. Bitte stellen Sie sicher, dass Sie eine funktionierende Internetverbindung haben.';
 
   @override
   String get readingsLeft => 'Verbleibende Messungen für aktuellen Token:';

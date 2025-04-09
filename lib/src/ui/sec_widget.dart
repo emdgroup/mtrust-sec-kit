@@ -78,27 +78,25 @@ class SecWidget extends StatelessWidget {
                     message = SecLocalizations.of(context).tokenFailed;
                   }
                 }
-                if(controller.state.error?.exception.runtimeType 
-                    == ApiException) {
-                  final error = controller.state.error?.exception 
-                                as ApiException;
-                  message = error.errorMessage;
+                if(controller.state.error?.exception.runtimeType is ApiException) {
+                  message = SecLocalizations.of(context).tokenFailed;
                 }
                 return LdAutoSpace(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    LdTextH(
+                    LdTextHs(
                       SecLocalizations.of(context).primeFailed,
                       textAlign: TextAlign.center,
-                    ),
-                    LdTextP(
-                      message,
                     ),
                     Expanded(
                       child: SecReaderVisualization(
                         ledColor: Colors.red,
                         screenContent: Container(),
                       ),
+                    ),
+                    LdTextP(
+                      message,
+                      textAlign: TextAlign.center,
                     ),
                     LdButtonWarning(
                       onPressed: controller.trigger,

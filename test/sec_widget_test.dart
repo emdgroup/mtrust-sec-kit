@@ -61,6 +61,36 @@ void main() {
             strategy.primeCompleter.complete();
           };
         },
+        'Prime Fail': (tester, place) async {
+          final strategy = CompleterStrategy(withReaders: true);
+
+          final storageAdapter = MockStorageAdapter();
+
+          await place(
+            AspectRatio(
+              aspectRatio: 1,
+              child: SecWidget(
+                strategy: strategy.strategy,
+                storageAdapter: storageAdapter,
+                payload: '',
+                onVerificationDone: (_) async {},
+                onVerificationFailed: () async {},
+              ),
+            ),
+          );
+
+          await tester.pumpAndSettle();
+
+          await tester.tap(find.byKey(const Key('connect_button')));
+
+          await tester.pumpAndSettle();
+
+          strategy.primeCompleter.completeError('Get token failed!');
+
+          await tester.pumpAndSettle();
+
+          return () async {};
+        },
         'Waiting for measurement': (tester, place) async {
           final strategy = CompleterStrategy(withReaders: true);
 

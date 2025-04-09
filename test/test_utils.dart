@@ -30,7 +30,11 @@ class CompleterStrategy {
       switch (payload.deviceCommand.command) {
         case (UrpSecCommand.urpSecPrime):
           primeCompleter = Completer<void>();
-          await primeCompleter.future;
+          try {
+            await primeCompleter.future;
+          } catch (e) {
+            return null;
+          }
 
           return UrpResponse();
 

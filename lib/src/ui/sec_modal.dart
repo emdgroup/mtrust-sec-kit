@@ -13,7 +13,7 @@ import 'package:mtrust_sec_kit/src/ui/sec_result.dart';
 /// Provide a [builder] that renders some UI with a callback to open the sheet.
 class SecModalBuilder extends StatelessWidget {
   /// Creates a new instance of [SecModalBuilder]
-  const SecModalBuilder({ 
+  const SecModalBuilder({
     required this.strategy,
     required this.payload,
     required this.onVerificationDone,
@@ -75,6 +75,7 @@ class SecModalBuilder extends StatelessWidget {
     }
 
     Future<void> handleClose() async {
+      await Future<void>.delayed(const Duration(milliseconds: 500));
       if (turnOffOnClose && strategy.status == ConnectionStatus.connected) {
         await SECReader(connectionStrategy: strategy).off();
       }
@@ -157,7 +158,6 @@ LdModal secModal({
 }) {
   return LdModal(
     disableScrolling: true,
-    padding: EdgeInsets.zero,
     noHeader: true,
     showDismissButton: canDismiss,
     userCanDismiss: canDismiss,
@@ -165,19 +165,24 @@ LdModal secModal({
     bottomRadius: bottomRadius,
     useSafeArea: useSafeArea,
     insets: insets,
+    contentPadding: EdgeInsets.zero,
+    fixedDialogSize: const Size(400, 400),
     size: LdSize.s,
     modalContent: (context) => AspectRatio(
       aspectRatio: 1,
-      child: SecWidget(
-        strategy: strategy,
-        payload: payload,
-        onVerificationDone: (UrpSecSecureMeasurement measurement) async {
-          Navigator.of(context).pop(SecResultSuccess(measurement));
-        },
-        onVerificationFailed: () async {
-          Navigator.of(context).pop(SecResultFailed());
-        },
-        tokenAmount: tokenAmount,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 32),
+        child: SecWidget(
+          strategy: strategy,
+          payload: payload,
+          onVerificationDone: (UrpSecSecureMeasurement measurement) async {
+            Navigator.of(context).pop(SecResultSuccess(measurement));
+          },
+          onVerificationFailed: () async {
+            Navigator.of(context).pop(SecResultFailed());
+          },
+          tokenAmount: tokenAmount,
+        ),
       ),
     ).padL(),
   );

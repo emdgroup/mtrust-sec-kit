@@ -144,10 +144,10 @@ class _ScanningInstructionState extends State<ScanningInstruction>
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  theme.background,
-                  theme.background.withAlpha(0),
-                  theme.background.withAlpha(0),
-                  theme.background,
+                  theme.surface,
+                  theme.surface.withAlpha(0),
+                  theme.surface.withAlpha(0),
+                  theme.surface,
                 ],
                 stops: const [0, 0.1, 0.9, 1],
               ),

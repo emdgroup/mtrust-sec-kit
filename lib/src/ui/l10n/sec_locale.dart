@@ -98,7 +98,7 @@ abstract class SecLocalizations {
   /// No description provided for @successfullyVerfied.
   ///
   /// In en, this message translates to:
-  /// **'Successfully verified with '**
+  /// **'Successfully verified'**
   String get successfullyVerfied;
 
   /// No description provided for @primeFailed.
@@ -224,8 +224,8 @@ abstract class SecLocalizations {
   /// No description provided for @readingsLeft.
   ///
   /// In en, this message translates to:
-  /// **'Readings left with current token:'**
-  String get readingsLeft;
+  /// **'Internet connection required in {n} measurements'**
+  String readingsLeft(Object n);
 }
 
 class _SecLocalizationsDelegate extends LocalizationsDelegate<SecLocalizations> {

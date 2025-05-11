@@ -1,3 +1,5 @@
+// ignore: unused_import
+import 'package:intl/intl.dart' as intl;
 import 'sec_locale.dart';
 
 // ignore_for_file: type=lint
@@ -72,5 +74,7 @@ class SecLocalizationsDe extends SecLocalizations {
   String get tokenFailed => 'Die Vorbereitung für den Scan ist fehlgeschlagen. Bitte stellen Sie sicher, dass Sie eine funktionierende Internetverbindung haben.';
 
   @override
-  String get readingsLeft => 'Verbleibende Messungen für aktuellen Token:';
+  String readingsLeft(Object n) {
+    return 'Intenetverbindung in $n Messungen notwendig';
+  }
 }

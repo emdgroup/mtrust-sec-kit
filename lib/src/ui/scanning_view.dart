@@ -91,7 +91,7 @@ class ScanningView extends StatelessWidget {
                   animate: true,
                   children: [
                     LdTextHs(
-                      SecLocalizations.of(context).successfullyVerfied,
+                      SecLocalizations.of(context).successfullyVerified,
                       textAlign: TextAlign.center,
                     ),
                     ldSpacerL,
@@ -100,7 +100,7 @@ class ScanningView extends StatelessWidget {
                         ledColor: Colors.green,
                         screenContent: Center(
                           child: Text(
-                            SecLocalizations.of(context).successfullyVerfied,
+                            SecLocalizations.of(context).successfullyVerified,
                           ),
                         ),
                       ),

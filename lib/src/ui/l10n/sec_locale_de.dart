@@ -9,7 +9,7 @@ class SecLocalizationsDe extends SecLocalizations {
   SecLocalizationsDe([String locale = 'de']) : super(locale);
 
   @override
-  String get successfullyVerfied => 'Verifizierung erfolgreich mit ';
+  String get successfullyVerified => 'Successfully verified';
 
   @override
   String get primeFailed => 'Failed to prepare for scan';

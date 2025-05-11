@@ -95,11 +95,11 @@ abstract class SecLocalizations {
     Locale('en')
   ];
 
-  /// No description provided for @successfullyVerfied.
+  /// No description provided for @successfullyVerified.
   ///
   /// In en, this message translates to:
   /// **'Successfully verified'**
-  String get successfullyVerfied;
+  String get successfullyVerified;
 
   /// No description provided for @primeFailed.
   ///

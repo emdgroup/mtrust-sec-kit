@@ -1,4 +1,5 @@
 import 'package:example/virtual_strategy.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mtrust_sec_kit/mtrust_sec_kit.dart';
 
@@ -35,23 +36,30 @@ class MainApp extends StatefulWidget {
 class _MainAppState extends State<MainApp> {
   bool _canDismiss = true;
 
-  final UrpBleStrategy _bleStrategy = UrpBleStrategy();
+  late final UrpBleStrategy _bleStrategy;
 
-  bool _useVirtual = false;
+  bool _useVirtual = kIsWeb;
 
   @override
   void initState() {
+    if (!kIsWeb) {
+      _bleStrategy = UrpBleStrategy();
+    }
+
     virtualStrategy.createVirtualReader(FoundDevice(
       name: "SEC-000123",
       type: UrpDeviceType.urpSec,
       address: "00:00:00:00:00:00",
     ));
+
     super.initState();
   }
 
   @override
   void dispose() {
-    _bleStrategy.dispose();
+    if (!kIsWeb) {
+      _bleStrategy.dispose();
+    }
     super.dispose();
   }
 

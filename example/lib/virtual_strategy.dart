@@ -6,6 +6,16 @@ final virtualStrategy = UrpVirtualStrategy((UrpRequest request) async {
   final payload = UrpSecCommandWrapper.fromBuffer(request.payload);
   final result = switch (payload.deviceCommand.command) {
     (UrpSecCommand.urpSecPrime) => UrpResponse(),
+    (UrpSecCommand.urpSecGetModelInfo) => UrpResponse(
+        payload: UrpSecModels(
+          models: [
+            UrpSecModelInfo(
+              modelId: 'Virtual Model',
+              version: '0.0.1',
+            ),
+          ],
+        ).writeToBuffer(),
+      ),
     (UrpSecCommand.urpSecStartMeasurement) => UrpResponse(
         payload: UrpSecSecureMeasurement(
           measurement: UrpSecMeasurement(

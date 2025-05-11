@@ -75,6 +75,6 @@ class SecLocalizationsDe extends SecLocalizations {
 
   @override
   String readingsLeft(Object n) {
-    return 'Intenetverbindung in $n Messungen notwendig';
+    return 'Internetverbindung in $n Messungen notwendig';
   }
 }

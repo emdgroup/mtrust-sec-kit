@@ -23,16 +23,6 @@ dev_dependencies:
   mtrust_urp_virtual_strategy: ^9.1.0-7
   very_good_analysis: ^5.1.0
 
-dependency_overrides:
-  liquid_flutter: ^22.0.1
-  mtrust_urp_core:
-    path: ../mtrust-urp/mtrust_urp_core
-  mtrust_urp_types: ^6.2.0
-  mtrust_urp_ui:
-    path: ../mtrust-urp/mtrust_urp_ui
-  mtrust_urp_virtual_strategy:
-    path: ../mtrust-urp/mtrust_urp_virtual_strategy
-
 flutter:
   uses-material-design: true
   generate: true

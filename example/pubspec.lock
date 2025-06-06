@@ -241,10 +241,10 @@ packages:
     dependency: transitive
     description:
       name: haptic_feedback
-      sha256: ef6df60bd92ac75c87774c3300dd19732f5fbd81734371ea62196c3f55013408
+      sha256: d3b5ad41858d18a35d317636c9cdc1cb8aef23c7b861ca5896273acc68e1a98a
       url: "https://pub.dev"
     source: hosted
-    version: "0.4.2"
+    version: "0.5.1+1"
   http:
     dependency: transitive
     description:
@@ -329,10 +329,10 @@ packages:
     dependency: "direct main"
     description:
       name: liquid_flutter
-      sha256: "95965a4e683cd2e0ed2344f4609253f8be7e4d421d3e4d98bbb51e2b9a1e4709"
+      sha256: "87b33e5262be709e0c61fa9c54e0fbb1736fdb7da5a5d8aed7c144605ed30eb9"
       url: "https://pub.dev"
     source: hosted
-    version: "22.0.2"
+    version: "22.0.4"
   logger:
     dependency: transitive
     description:

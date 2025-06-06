@@ -52,7 +52,7 @@ jobs:
         uses: dart-lang/setup-dart@v1
 
       - name: Prepare Flutter
-        uses: e./.github/actions/prepare-flutter
+        uses: ./.github/actions/prepare-flutter
         with:
           directory: .
 

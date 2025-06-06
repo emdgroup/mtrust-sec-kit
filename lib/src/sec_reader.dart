@@ -357,7 +357,7 @@ class SECReader extends CmdWrapper {
           );
         }
 
-        await setToken(newToken!);
+        await setToken(newToken);
         return prime(payload);
       }
       return null;

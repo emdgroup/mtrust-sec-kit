@@ -1,3 +1,5 @@
+// ignore: unused_import
+import 'package:intl/intl.dart' as intl;
 import 'sec_locale.dart';
 
 // ignore_for_file: type=lint
@@ -7,7 +9,7 @@ class SecLocalizationsDe extends SecLocalizations {
   SecLocalizationsDe([String locale = 'de']) : super(locale);
 
   @override
-  String get successfullyVerfied => 'Verifizierung erfolgreich mit ';
+  String get successfullyVerified => 'Successfully verified';
 
   @override
   String get primeFailed => 'Failed to prepare for scan';
@@ -34,7 +36,8 @@ class SecLocalizationsDe extends SecLocalizations {
   String get turnOnPrompt => 'Zum Einschalten Taste drücken';
 
   @override
-  String get timeHint => 'Sobald der Vorgang gestartet wurde, haben Sie 30 Sekunden Zeit zum Scannen';
+  String get timeHint =>
+      'Sobald der Vorgang gestartet wurde, haben Sie 30 Sekunden Zeit zum Scannen';
 
   @override
   String get readyToScan => 'Bereit zum Scannen';
@@ -43,7 +46,8 @@ class SecLocalizationsDe extends SecLocalizations {
   String get startScan => 'Scan starten';
 
   @override
-  String get distanceHint => 'Approach the surface parallel to the reader at a distance of 8-12mm';
+  String get distanceHint =>
+      'Approach the surface parallel to the reader at a distance of 8-12mm';
 
   @override
   String get primingTitle => 'Scannen vorbereiten...';
@@ -66,11 +70,15 @@ class SecLocalizationsDe extends SecLocalizations {
   }
 
   @override
-  String get incompatibleFirmware => 'Inkompatible Firmware. Bitte Update durchführen!';
+  String get incompatibleFirmware =>
+      'Inkompatible Firmware. Bitte Update durchführen!';
 
   @override
-  String get tokenFailed => 'Die Vorbereitung für den Scan ist fehlgeschlagen. Bitte stellen Sie sicher, dass Sie eine funktionierende Internetverbindung haben.';
+  String get tokenFailed =>
+      'Die Vorbereitung für den Scan ist fehlgeschlagen. Bitte stellen Sie sicher, dass Sie eine funktionierende Internetverbindung haben.';
 
   @override
-  String get readingsLeft => 'Verbleibende Messungen für aktuellen Token:';
+  String readingsLeft(Object n) {
+    return 'Internetverbindung in $n Messungen notwendig';
+  }
 }

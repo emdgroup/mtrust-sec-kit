@@ -1,3 +1,5 @@
+// ignore: unused_import
+import 'package:intl/intl.dart' as intl;
 import 'sec_locale.dart';
 
 // ignore_for_file: type=lint
@@ -7,7 +9,7 @@ class SecLocalizationsEn extends SecLocalizations {
   SecLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get successfullyVerfied => 'Successfully verified with ';
+  String get successfullyVerified => 'Successfully verified';
 
   @override
   String get primeFailed => 'Failed to prepare for scan';
@@ -43,7 +45,8 @@ class SecLocalizationsEn extends SecLocalizations {
   String get startScan => 'Start scan';
 
   @override
-  String get distanceHint => 'Approach the surface parallel to the reader at a distance of 8-12mm';
+  String get distanceHint =>
+      'Approach the surface parallel to the reader at a distance of 8-12mm';
 
   @override
   String get primingTitle => 'Getting ready to scan...';
@@ -69,8 +72,11 @@ class SecLocalizationsEn extends SecLocalizations {
   String get incompatibleFirmware => 'Firmware incompatible. Please update!';
 
   @override
-  String get tokenFailed => 'Failed to prepare for scan. Please make sure you have a working internet connection';
+  String get tokenFailed =>
+      'Failed to prepare for scan. Please make sure you have a working internet connection';
 
   @override
-  String get readingsLeft => 'Readings left with current token:';
+  String readingsLeft(Object n) {
+    return 'Internet connection required in $n measurements';
+  }
 }

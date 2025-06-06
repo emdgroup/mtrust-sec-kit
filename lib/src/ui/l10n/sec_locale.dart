@@ -62,7 +62,8 @@ import 'sec_locale_en.dart';
 /// be consistent with the languages listed in the SecLocalizations.supportedLocales
 /// property.
 abstract class SecLocalizations {
-  SecLocalizations(String locale) : localeName = intl.Intl.canonicalizedLocale(locale.toString());
+  SecLocalizations(String locale)
+      : localeName = intl.Intl.canonicalizedLocale(locale.toString());
 
   final String localeName;
 
@@ -70,7 +71,8 @@ abstract class SecLocalizations {
     return Localizations.of<SecLocalizations>(context, SecLocalizations)!;
   }
 
-  static const LocalizationsDelegate<SecLocalizations> delegate = _SecLocalizationsDelegate();
+  static const LocalizationsDelegate<SecLocalizations> delegate =
+      _SecLocalizationsDelegate();
 
   /// A list of this localizations delegate along with the default localizations
   /// delegates.
@@ -82,7 +84,8 @@ abstract class SecLocalizations {
   /// Additional delegates can be added by appending to this list in
   /// MaterialApp. This list does not have to be used at all if a custom list
   /// of delegates is preferred or required.
-  static const List<LocalizationsDelegate<dynamic>> localizationsDelegates = <LocalizationsDelegate<dynamic>>[
+  static const List<LocalizationsDelegate<dynamic>> localizationsDelegates =
+      <LocalizationsDelegate<dynamic>>[
     delegate,
     GlobalMaterialLocalizations.delegate,
     GlobalCupertinoLocalizations.delegate,
@@ -95,11 +98,11 @@ abstract class SecLocalizations {
     Locale('en')
   ];
 
-  /// No description provided for @successfullyVerfied.
+  /// No description provided for @successfullyVerified.
   ///
   /// In en, this message translates to:
-  /// **'Successfully verified with '**
-  String get successfullyVerfied;
+  /// **'Successfully verified'**
+  String get successfullyVerified;
 
   /// No description provided for @primeFailed.
   ///
@@ -224,11 +227,12 @@ abstract class SecLocalizations {
   /// No description provided for @readingsLeft.
   ///
   /// In en, this message translates to:
-  /// **'Readings left with current token:'**
-  String get readingsLeft;
+  /// **'Internet connection required in {n} measurements'**
+  String readingsLeft(Object n);
 }
 
-class _SecLocalizationsDelegate extends LocalizationsDelegate<SecLocalizations> {
+class _SecLocalizationsDelegate
+    extends LocalizationsDelegate<SecLocalizations> {
   const _SecLocalizationsDelegate();
 
   @override
@@ -237,25 +241,25 @@ class _SecLocalizationsDelegate extends LocalizationsDelegate<SecLocalizations> 
   }
 
   @override
-  bool isSupported(Locale locale) => <String>['de', 'en'].contains(locale.languageCode);
+  bool isSupported(Locale locale) =>
+      <String>['de', 'en'].contains(locale.languageCode);
 
   @override
   bool shouldReload(_SecLocalizationsDelegate old) => false;
 }
 
 SecLocalizations lookupSecLocalizations(Locale locale) {
-
-
   // Lookup logic when only language code is specified.
   switch (locale.languageCode) {
-    case 'de': return SecLocalizationsDe();
-    case 'en': return SecLocalizationsEn();
+    case 'de':
+      return SecLocalizationsDe();
+    case 'en':
+      return SecLocalizationsEn();
   }
 
   throw FlutterError(
-    'SecLocalizations.delegate failed to load unsupported locale "$locale". This is likely '
-    'an issue with the localizations generation tool. Please file an issue '
-    'on GitHub with a reproducible sample app and the gen-l10n configuration '
-    'that was used.'
-  );
+      'SecLocalizations.delegate failed to load unsupported locale "$locale". This is likely '
+      'an issue with the localizations generation tool. Please file an issue '
+      'on GitHub with a reproducible sample app and the gen-l10n configuration '
+      'that was used.');
 }

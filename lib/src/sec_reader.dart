@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:mtrust_sec_kit/mtrust_sec_kit.dart';
 
 /// [SECReader] is a class that provides a high-level API to interact with
@@ -16,36 +17,36 @@ class SECReader extends CmdWrapper {
     required this.connectionStrategy,
     UrpDeviceIdentifier? target,
     UrpDeviceIdentifier? origin,
-  }) : target = target ??
-              UrpDeviceIdentifier(
-                deviceClass: UrpDeviceClass.urpReader,
-                deviceType: UrpDeviceType.urpSec,
-              ),
+  })  : target = target ??
+            UrpDeviceIdentifier(
+              deviceClass: UrpDeviceClass.urpReader,
+              deviceType: UrpDeviceType.urpSec,
+            ),
         origin = origin ??
             UrpDeviceIdentifier(
               deviceClass: UrpDeviceClass.urpHost,
-              deviceType: (Platform.isAndroid || Platform.isIOS)
+              deviceType: (kIsWeb || Platform.isAndroid || Platform.isIOS)
                   ? UrpDeviceType.urpMobile
                   : UrpDeviceType.urpDesktop,
             );
 
-    /// The connectionStrategy used to connect the device.
-    final ConnectionStrategy connectionStrategy;
+  /// The connectionStrategy used to connect the device.
+  final ConnectionStrategy connectionStrategy;
 
-    /// The target device.
-    final UrpDeviceIdentifier target;
+  /// The target device.
+  final UrpDeviceIdentifier target;
 
-    /// The origin device.
-    final UrpDeviceIdentifier origin;
+  /// The origin device.
+  final UrpDeviceIdentifier origin;
 
-    int _requestTokenAmount = 10;
+  int _requestTokenAmount = 10;
 
-    /// Sets the amount of tokens to be requested if the device has no more
-    /// tokens available. The default is 10.
-    void setTokenAmount(int amount) {
-      _requestTokenAmount = amount;
-      notifyListeners();
-    }
+  /// Sets the amount of tokens to be requested if the device has no more
+  /// tokens available. The default is 10.
+  void setTokenAmount(int amount) {
+    _requestTokenAmount = amount;
+    notifyListeners();
+  }
 
   /// Find and connect to a SEC reader using the given [connectionStrategy].
   /// If [deviceAddress] is provided, it will try to connect to the reader
@@ -68,7 +69,9 @@ class SECReader extends CmdWrapper {
 
   /// Returns a list of all available [UrpDeviceType.urpSec] and
   /// [UrpDeviceType.urpSecQc] reader.
-  static Stream<FoundDevice> findReaders(ConnectionStrategy connectionStrategy){
+  static Stream<FoundDevice> findReaders(
+    ConnectionStrategy connectionStrategy,
+  ) {
     return connectionStrategy.findDevices({
       UrpDeviceType.urpSec,
       UrpDeviceType.urpSecQc,
@@ -95,15 +98,15 @@ class SECReader extends CmdWrapper {
   }
 
   Future<UrpResponse> _addCommandToQueue({
-    UrpCoreCommand? coreCommand, 
+    UrpCoreCommand? coreCommand,
     UrpSecDeviceCommand? deviceCommand,
   }) async {
     return connectionStrategy.addQueue(
       UrpSecCommandWrapper(
         coreCommand: coreCommand,
         deviceCommand: deviceCommand,
-      ).writeToBuffer(), 
-      target, 
+      ).writeToBuffer(),
+      target,
       origin,
     );
   }
@@ -139,7 +142,7 @@ class SECReader extends CmdWrapper {
     );
     final res = await _addCommandToQueue(coreCommand: cmd);
 
-    if(!res.hasPayload()) {
+    if (!res.hasPayload()) {
       throw SecReaderException(message: 'Failed to get power state');
     }
     return UrpPowerState.fromBuffer(res.payload);
@@ -163,7 +166,7 @@ class SECReader extends CmdWrapper {
     );
     final res = await _addCommandToQueue(coreCommand: cmd);
 
-    if(!res.hasPayload()) {
+    if (!res.hasPayload()) {
       throw SecReaderException(message: 'Failed to get name');
     }
     return UrpDeviceName.fromBuffer(res.payload);
@@ -249,7 +252,7 @@ class SECReader extends CmdWrapper {
     );
     final res = await _addCommandToQueue(coreCommand: cmd);
 
-    if(!res.hasPayload()) {
+    if (!res.hasPayload()) {
       throw SecReaderException(message: 'Failed to get public key');
     }
     return UrpPublicKey.fromBuffer(res.payload);
@@ -263,7 +266,7 @@ class SECReader extends CmdWrapper {
     );
     final res = await _addCommandToQueue(coreCommand: cmd);
 
-    if(!res.hasPayload()) {
+    if (!res.hasPayload()) {
       throw SecReaderException(message: 'Failed to get public key');
     }
     return UrpDeviceId.fromBuffer(res.payload);
@@ -287,12 +290,12 @@ class SECReader extends CmdWrapper {
     );
     final res = await _addCommandToQueue(coreCommand: cmd);
 
-    if(!res.hasPayload()) {
+    if (!res.hasPayload()) {
       throw SecReaderException(message: 'Failed to connect to AP');
     }
     return UrpWifiState.fromBuffer(res.payload);
   }
-  
+
   /// Disconnect AP.
   @override
   Future<void> disconnectAP() async {
@@ -301,7 +304,7 @@ class SECReader extends CmdWrapper {
     );
     await _addCommandToQueue(coreCommand: cmd);
   }
-  
+
   /// Start AP. Throws an error if failed.
   @override
   Future<UrpWifiState> startAP(String ssid, String apk) async {
@@ -311,12 +314,12 @@ class SECReader extends CmdWrapper {
     );
     final res = await _addCommandToQueue(coreCommand: cmd);
 
-    if(!res.hasPayload()) {
+    if (!res.hasPayload()) {
       throw SecReaderException(message: 'Failed to start AP');
     }
     return UrpWifiState.fromBuffer(res.payload);
   }
-  
+
   /// Stop AP.
   @override
   Future<void> stopAP() async {
@@ -336,26 +339,26 @@ class SECReader extends CmdWrapper {
       final res = await _addCommandToQueue(deviceCommand: cmd);
       return UrpSecPrimeResponse.fromBuffer(res.payload);
     } catch (e) {
-      if(e is DeviceError) {
-        if(e.errorCode == 4) {
-          final publicKey = await getPublicKey();
-          final oldToken = await requestToken();
-          try {
-            final newToken = await getToken(oldToken, publicKey);
-            if(newToken == null) {
-              throw SecReaderException(
-                message: 'Failed to get new token!',
-                type: SecReaderExceptionType.tokenFailed,
-              );
-            }
-            await setToken(newToken);
-            return prime(payload);
-          } catch (e) {
-            rethrow;
-          }
-        } else {
+      if (e is DeviceError) {
+        if (e.errorCode != 4) {
           rethrow;
         }
+        final publicKey = await getPublicKey();
+        final oldToken = await requestToken();
+
+        UrpSecureToken? newToken;
+
+        try {
+          newToken = await getToken(oldToken, publicKey);
+        } catch (e) {
+          throw SecReaderException(
+            message: 'Failed to get new token!',
+            type: SecReaderExceptionType.tokenFailed,
+          );
+        }
+
+        await setToken(newToken);
+        return prime(payload);
       }
       return null;
     }
@@ -373,7 +376,7 @@ class SECReader extends CmdWrapper {
       deviceCommand: cmd,
     );
 
-    if(!res.hasPayload()) {
+    if (!res.hasPayload()) {
       throw SecReaderException(
         message: 'Failed to request token!',
         type: SecReaderExceptionType.tokenFailed,
@@ -400,7 +403,7 @@ class SECReader extends CmdWrapper {
       deviceCommand: cmd,
     );
 
-    if(!res.hasPayload()) {
+    if (!res.hasPayload()) {
       throw SecReaderException(
         message: 'Failed to get current token!',
         type: SecReaderExceptionType.tokenFailed,
@@ -463,5 +466,4 @@ class SECReader extends CmdWrapper {
     final urpSecModels = UrpSecModels.fromBuffer(res.payload);
     return urpSecModels.models;
   }
-  
 }

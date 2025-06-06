@@ -1,6 +1,6 @@
 {
     "@@locale": "en",
-    "successfullyVerfied": "Successfully verified with ",
+    "successfullyVerified": "Successfully verified",
     "primeFailed": "Failed to prepare for scan",
     "verificationFailed": "Verification failed",
     "verificationFailedMessage": "Could not detect security pigment.",
@@ -21,5 +21,5 @@
     "secondsLeft": "{seconds}s\nleft",
     "incompatibleFirmware": "Firmware incompatible. Please update!",
     "tokenFailed": "Failed to prepare for scan. Please make sure you have a working internet connection",
-    "readingsLeft": "Readings left with current token:"
+    "readingsLeft": "Internet connection required in {n} measurements"
 }

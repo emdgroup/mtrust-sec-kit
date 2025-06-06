@@ -159,14 +159,15 @@ void main() {
 
           await tester.tap(find.text('Start scan'));
 
-          strategy.startMeasurementCompleter.completeError('');
+          await tester.pump(const Duration(seconds: 36));
 
           await tester.pumpAndSettle();
 
           return () async {};
         },
         'Measure Complete': (tester, place) async {
-          final strategy = CompleterStrategy(withReaders: true);
+          final strategy =
+              CompleterStrategy(withReaders: true, useDelays: true);
 
           final storageAdapter = MockStorageAdapter();
 
@@ -189,15 +190,19 @@ void main() {
 
           await tester.pumpAndSettle();
 
-          strategy.primeCompleter.complete();
+          await tester.pumpAndSettle();
+
+          await tester.pump(const Duration(seconds: 1));
 
           await tester.pumpAndSettle();
 
           await tester.tap(find.text('Start scan'));
 
-          strategy.startMeasurementCompleter.complete();
+          await tester.pump(const Duration(seconds: 1));
 
           await tester.pumpAndSettle();
+
+          await tester.pump(const Duration(seconds: 2));
 
           return () async {};
         },

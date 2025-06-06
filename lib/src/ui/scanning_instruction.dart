@@ -97,29 +97,6 @@ class _ScanningInstructionState extends State<ScanningInstruction>
                             width: 2,
                             color: color,
                           ),
-                          Expanded(
-                            child: Container(
-                              height: 2,
-                              color: color,
-                            ),
-                          ),
-                          ldSpacerS,
-                          Expanded(
-                            flex: 2,
-                            child: LdTextL(
-                              '${(12 + 12 * (1 - value)).toStringAsFixed(2)}mm',
-                              color: color,
-                              textAlign: TextAlign.center,
-                              maxLines: 2,
-                            ),
-                          ),
-                          ldSpacerS,
-                          Expanded(
-                            child: Container(
-                              height: 2,
-                              color: color,
-                            ),
-                          ),
                           Container(
                             height: 16,
                             width: 2,
@@ -144,10 +121,10 @@ class _ScanningInstructionState extends State<ScanningInstruction>
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  theme.background,
-                  theme.background.withAlpha(0),
-                  theme.background.withAlpha(0),
-                  theme.background,
+                  theme.surface,
+                  theme.surface.withAlpha(0),
+                  theme.surface.withAlpha(0),
+                  theme.surface,
                 ],
                 stops: const [0, 0.1, 0.9, 1],
               ),

@@ -24,13 +24,17 @@ final reader3 = FoundDevice(
 );
 
 class CompleterStrategy {
-  CompleterStrategy({bool withReaders = false}) {
+  CompleterStrategy({bool withReaders = false, this.useDelays = false}) {
     strategy = UrpVirtualStrategy((UrpRequest request) async {
       final payload = UrpSecCommandWrapper.fromBuffer(request.payload);
       switch (payload.deviceCommand.command) {
         case (UrpSecCommand.urpSecPrime):
           primeCompleter = Completer<void>();
-          await primeCompleter.future;
+          if (useDelays) {
+            await Future<void>.delayed(const Duration(seconds: 1));
+          } else {
+            await primeCompleter.future;
+          }
 
           return UrpResponse();
 
@@ -48,10 +52,11 @@ class CompleterStrategy {
 
         case UrpSecCommand.urpSecStartMeasurement:
           startMeasurementCompleter = Completer<void>();
-          try {
+
+          if (useDelays) {
+            await Future<void>.delayed(const Duration(seconds: 1));
+          } else {
             await startMeasurementCompleter.future;
-          } catch (e) {
-            return null;
           }
 
           return UrpResponse(
@@ -89,6 +94,7 @@ class CompleterStrategy {
         );
     }
   }
+  final bool useDelays;
   Completer<void> primeCompleter = Completer<void>();
   Completer<void> startMeasurementCompleter = Completer<void>();
   late UrpVirtualStrategy strategy;

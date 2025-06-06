@@ -3,8 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:liquid_flutter/liquid_flutter.dart';
 import 'package:mtrust_sec_kit/mtrust_sec_kit.dart';
-import 'package:mtrust_sec_kit/src/ui/count_down_progress.dart';
-import 'package:mtrust_sec_kit/src/ui/scanning_instruction.dart';
+import 'package:mtrust_sec_kit/src/ui/scanning_view.dart';
 
 /// [SecWidget] is a widget that guides the user through the SEC
 /// workflow.
@@ -43,297 +42,147 @@ class SecWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
-    var models = <UrpSecModelInfo>[];
-
-    return DeviceConnector(
-      connectionStrategy: strategy,
-      storageAdapter: storageAdapter,
-      connectedBuilder: (BuildContext context) {
-        return LdSubmit<UrpSecPrimeResponse?>(
-          config: LdSubmitConfig<UrpSecPrimeResponse?>(
-            loadingText: SecLocalizations.of(context).primingTitle,
-            autoTrigger: true,
-            action: () async {
-              final reader = SECReader(
-                connectionStrategy: strategy,
-              );
-              models = await reader.getModelInfo();
-              if(tokenAmount != null) {
-                reader.setTokenAmount(tokenAmount!);
-              }
-              return reader.prime(payload);
-            },
-          ),
-          builder: LdSubmitCustomBuilder<UrpSecPrimeResponse?>(
-            builder: (context, controller, stateType) {
-              if (stateType == LdSubmitStateType.error) {
-                var message = controller.state.error?.message 
-                              ?? 'Unknown error';
-                if(controller.state.error?.exception.runtimeType 
-                    == SecReaderException) {
-                  final error = controller.state.error?.exception 
-                                as SecReaderException;
-                  if(error.type == SecReaderExceptionType.tokenFailed) {
-                    message = SecLocalizations.of(context).tokenFailed;
-                  }
-                }
-                if(controller.state.error?.exception.runtimeType is ApiException) {
-                  message = SecLocalizations.of(context).tokenFailed;
-                }
-                return LdAutoSpace(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    LdTextHs(
-                      SecLocalizations.of(context).primeFailed,
-                      textAlign: TextAlign.center,
-                    ),
-                    Expanded(
-                      child: SecReaderVisualization(
-                        ledColor: Colors.red,
-                        screenContent: Container(),
-                      ),
-                    ),
-                    LdTextP(
-                      message,
-                      textAlign: TextAlign.center,
-                    ),
-                    LdButtonWarning(
-                      onPressed: controller.trigger,
-                      context: context,
-                      child: Text(
-                        SecLocalizations.of(context).retry,
-                      ),
-                    ),
-                  ],
+    final locale = SecLocalizations.of(context);
+    return LdExceptionMapperProvider(
+      exceptionMapper: _SecExceptionMapper(
+        secLocalizations: locale,
+        localizations: LiquidLocalizations.of(context),
+      ),
+      child: DeviceConnector(
+        connectionStrategy: strategy,
+        storageAdapter: storageAdapter,
+        connectedBuilder: (BuildContext context) {
+          return LdSubmit<UrpSecPrimeResponse?>(
+            config: LdSubmitConfig<UrpSecPrimeResponse?>(
+              loadingText: locale.primingTitle,
+              autoTrigger: true,
+              action: () async {
+                final reader = SECReader(
+                  connectionStrategy: strategy,
                 );
-              }
 
-              if (stateType == LdSubmitStateType.loading) {
-                return Center(
-                  child: LdAutoSpace(
+                if (tokenAmount != null) {
+                  reader.setTokenAmount(tokenAmount!);
+                }
+                return reader.prime(payload);
+              },
+            ),
+            builder: LdSubmitCustomBuilder<UrpSecPrimeResponse?>(
+              builder: (context, controller, stateType) {
+                if (stateType == LdSubmitStateType.error) {
+                  var message =
+                      controller.state.error?.message ?? 'Unknown error';
+
+                  if (controller.state.error?.exception.runtimeType
+                      is ApiException) {
+                    message = locale.tokenFailed;
+                  }
+                  return LdAutoSpace(
                     crossAxisAlignment: CrossAxisAlignment.center,
-                    animate: true,
                     children: [
-                      const LdLoader(),
-                      LdTextL(
-                        SecLocalizations.of(context).primingTitle,
+                      LdTextHs(
+                        locale.primeFailed,
                         textAlign: TextAlign.center,
                       ),
+                      Expanded(
+                        child: SecReaderVisualization(
+                          ledColor: Colors.red,
+                          screenContent: Container(),
+                        ),
+                      ),
+                      LdTextP(
+                        message,
+                        textAlign: TextAlign.center,
+                      ),
+                      if (controller.canRetry)
+                        LdButtonWarning(
+                          onPressed: controller.trigger,
+                          context: context,
+                          child: Text(
+                            locale.retry,
+                          ),
+                        )
+                      else
+                        LdButtonWarning(
+                          onPressed: onVerificationFailed,
+                          context: context,
+                          child: Text(
+                            locale.done,
+                          ),
+                        ),
                     ],
-                  ),
-                );
-              }
+                  );
+                }
 
-              return _ScanningView(
-                strategy: strategy,
-                onVerificationDone: (
-                  UrpSecSecureMeasurement measurement,
-                ) async {
-                  controller.reset();
-                  await onVerificationDone(measurement);
-                },
-                onVerificationFailed: () async {
-                  controller.reset();
-                  await onVerificationFailed();
-                },
-                remainingScans: controller.state.result?.gsa,
-                models: models,
-              );
-            },
-          ),
-        );
-      },
-      deviceTypes: const {UrpDeviceType.urpSec},
+                if (stateType == LdSubmitStateType.loading) {
+                  return Center(
+                    child: LdAutoSpace(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      animate: true,
+                      children: [
+                        const LdLoader(),
+                        LdTextL(
+                          locale.primingTitle,
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
+                  );
+                }
+
+                return ScanningView(
+                  strategy: strategy,
+                  onVerificationDone: (
+                    UrpSecSecureMeasurement measurement,
+                  ) async {
+                    controller.reset();
+                    await onVerificationDone(measurement);
+                  },
+                  onVerificationFailed: () async {
+                    controller.reset();
+                    await onVerificationFailed();
+                  },
+                  remainingScans: controller.state.result?.gsa,
+                );
+              },
+            ),
+          );
+        },
+        deviceTypes: const {UrpDeviceType.urpSec},
+      ),
     );
   }
 }
 
-class _ScanningView extends StatelessWidget {
-  const _ScanningView({
-    required this.strategy,
-    required this.onVerificationDone,
-    required this.onVerificationFailed,
-    this.remainingScans,
-    this.models,
+class _SecExceptionMapper extends LdExceptionMapper {
+  _SecExceptionMapper({
+    required this.secLocalizations,
+    required super.localizations,
   });
 
-  final int? remainingScans;
-  final ConnectionStrategy strategy;
-  final Future<void> Function(
-    UrpSecSecureMeasurement measurement,
-  ) onVerificationDone;
-  final Future<void> Function() onVerificationFailed;
-  final List<UrpSecModelInfo>? models;
+  final SecLocalizations secLocalizations;
 
   @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: LdSubmit<UrpSecSecureMeasurement>(
-        config: LdSubmitConfig<UrpSecSecureMeasurement>(
-          loadingText: SecLocalizations.of(context).scanning,
-          submitText: SecLocalizations.of(context).startScan,
-          timeout: const Duration(seconds: 35),
-          action: () async {
-            final reader = SECReader(
-              connectionStrategy: strategy,
-            );
-            return reader.startMeasurement();
-          },
-        ),
-        builder: LdSubmitCustomBuilder<UrpSecSecureMeasurement>(
-          builder: (context, measurementController, measurementStateType) {
+  LdException handle(dynamic e, {StackTrace? stackTrace}) {
+    if (e is SecReaderException) {
+      final retriable = {
+        SecReaderExceptionType.tokenFailed,
+        SecReaderExceptionType.measurementFailed,
+        SecReaderExceptionType.unspecified,
+      };
+      return LdException(
+        message: switch (e.type) {
+          SecReaderExceptionType.tokenFailed => secLocalizations.tokenFailed,
+          SecReaderExceptionType.incompatibleFirmware =>
+            secLocalizations.incompatibleFirmware,
+          SecReaderExceptionType.measurementFailed =>
+            secLocalizations.verificationFailedMessage,
+          SecReaderExceptionType.unspecified => localizations.unknownError,
+        },
+        canRetry: retriable.contains(e.type),
+      );
+    }
 
-            final installedModels = models != null
-              ? models!.map((model) => '${model.modelId} ${model.version}').join(', ')
-              : '';
-
-            switch (measurementStateType) {
-              case (LdSubmitStateType.loading):
-                return LdAutoSpace(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  animate: true,
-                  children: [
-                    LdTextHs(
-                      SecLocalizations.of(context).scanning,
-                      textAlign: TextAlign.center,
-                    ),
-                    LdTextP(
-                      installedModels,
-                      textAlign: TextAlign.center,
-                    ),
-                    LdTextP(
-                      SecLocalizations.of(context).distanceHint,
-                      textAlign: TextAlign.center,
-                    ),
-                    ldSpacerL,
-                    const Expanded(
-                      child: ScanningInstruction(),
-                    ),
-                    ldSpacerL,
-                    const CountDownProgress(),
-                    ldSpacerL,
-                  ],
-                );
-              case (LdSubmitStateType.result):
-
-                final result = measurementController.state.result!;
-                final model = result.measurement.result.first.modelId;
-
-                return LdAutoSpace(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  animate: true,
-                  children: [
-                    LdTextHs(
-                      SecLocalizations.of(context).successfullyVerfied + model,
-                      textAlign: TextAlign.center,
-                    ),
-                    ldSpacerL,
-                    ldSpacerL,
-                    Expanded(
-                      child: SecReaderVisualization(
-                        ledColor: Colors.green,
-                        screenContent: Center(
-                          child: Text(
-                            SecLocalizations.of(context).successfullyVerfied,
-                          ),
-                        ),
-                      ),
-                    ),
-                    ldSpacerL,
-                    LdButton(
-                      onPressed: () async {
-                        await onVerificationDone(
-                          result,
-                        );
-                      },
-                      loadingText: SecLocalizations.of(context).disconnecting,
-                      child: Text(
-                        SecLocalizations.of(context).done,
-                      ),
-                    ),
-                    ldSpacerL,
-                  ],
-                );
-              case (LdSubmitStateType.idle):
-                return LdAutoSpace(
-                  animate: true,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    LdTextHs(
-                      SecLocalizations.of(context).readyToScan,
-                      textAlign: TextAlign.center,
-                    ),
-                    LdTextP(
-                      installedModels,
-                      textAlign: TextAlign.center,
-                    ),
-                    ldSpacerM,
-                    LdTextP(
-                      """${SecLocalizations.of(context).readingsLeft} ${remainingScans ?? 'Unknown'}""",
-                      textAlign: TextAlign.center,
-                    ),
-                    LdTextP(
-                      SecLocalizations.of(context).timeHint,
-                      textAlign: TextAlign.center,
-                    ),
-                    Expanded(
-                      child: SecReaderVisualization(
-                        ledColor: Colors.yellow,
-                        screenContent: Container(),
-                      ),
-                    ),
-                    LdButton(
-                      onPressed: measurementController.trigger,
-                      child: Text(
-                        SecLocalizations.of(context).startScan,
-                      ),
-                    ),
-                  ],
-                ).padL();
-              case (LdSubmitStateType.error): 
-                var message = SecLocalizations.of(context)
-                              .verificationFailedMessage;
-                if(measurementController.state.error?.exception.runtimeType 
-                    == SecReaderExceptionType) {
-                  final error = measurementController.state.error?.exception 
-                                as SecReaderException;
-                  if(error.type == SecReaderExceptionType.incompatibleFirmware){
-                    message = SecLocalizations.of(context).incompatibleFirmware;
-                  }
-                }
-                return LdAutoSpace(
-                  animate: true,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    LdTextHs(
-                      SecLocalizations.of(context).verificationFailed,
-                      textAlign: TextAlign.center,
-                    ),
-                    LdTextP(
-                      message,
-                      textAlign: TextAlign.center,
-                    ),
-                    Expanded(
-                      child: SecReaderVisualization(
-                        ledColor: Colors.red,
-                        screenContent: Container(),
-                      ),
-                    ),
-                    LdButtonWarning(
-                      onPressed: onVerificationFailed,
-                      loadingText: SecLocalizations.of(context).disconnecting,
-                      context: context,
-                      child: Text(
-                        SecLocalizations.of(context).done,
-                      ),
-                    ),
-                  ],
-                ).padL();
-            }
-          },
-        ),
-      ),
-    );
+    return super.handle(e, stackTrace: stackTrace);
   }
 }

@@ -1,7 +1,6 @@
 // ignore_for_file: avoid_dynamic_calls
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:liquid_flutter/liquid_flutter.dart';
 import 'package:mtrust_sec_kit/mtrust_sec_kit.dart';
 import 'package:mtrust_sec_kit/src/ui/count_down_progress.dart';
@@ -48,11 +47,6 @@ class ScanningView extends StatelessWidget {
             );
             final result = await reader.startMeasurement();
 
-            await HapticFeedback.heavyImpact();
-            await Future<void>.delayed(const Duration(milliseconds: 200));
-            await HapticFeedback.lightImpact();
-            await Future<void>.delayed(const Duration(milliseconds: 200));
-            await HapticFeedback.lightImpact();
             return result;
           },
         ),

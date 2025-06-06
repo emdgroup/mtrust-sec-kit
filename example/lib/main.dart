@@ -67,9 +67,8 @@ class _MainAppState extends State<MainApp> {
   Widget build(BuildContext context) {
     return LdPortal(
       child: Scaffold(
-        appBar: LdAppBar(
-          context: context,
-          title: const Text(
+        appBar: const LdAppBar(
+          title: Text(
             "SEC Kit Example",
           ),
         ),

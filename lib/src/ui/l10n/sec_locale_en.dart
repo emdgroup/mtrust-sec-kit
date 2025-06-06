@@ -45,7 +45,8 @@ class SecLocalizationsEn extends SecLocalizations {
   String get startScan => 'Start scan';
 
   @override
-  String get distanceHint => 'Approach the surface parallel to the reader at a distance of 8-12mm';
+  String get distanceHint =>
+      'Approach the surface parallel to the reader at a distance of 8-12mm';
 
   @override
   String get primingTitle => 'Getting ready to scan...';
@@ -71,7 +72,8 @@ class SecLocalizationsEn extends SecLocalizations {
   String get incompatibleFirmware => 'Firmware incompatible. Please update!';
 
   @override
-  String get tokenFailed => 'Failed to prepare for scan. Please make sure you have a working internet connection';
+  String get tokenFailed =>
+      'Failed to prepare for scan. Please make sure you have a working internet connection';
 
   @override
   String readingsLeft(Object n) {

@@ -346,7 +346,7 @@ class SECReader extends CmdWrapper {
         final publicKey = await getPublicKey();
         final oldToken = await requestToken();
 
-        UrpSecureToken newToken;
+        UrpSecureToken? newToken;
 
         try {
           newToken = await getToken(oldToken, publicKey);
@@ -357,7 +357,7 @@ class SECReader extends CmdWrapper {
           );
         }
 
-        await setToken(newToken);
+        await setToken(newToken!);
         return prime(payload);
       }
       return null;

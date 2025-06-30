@@ -1,0 +1,19 @@
+name: Fetch SDK Versions
+description: Clones the SDK repo and extracts available tags.
+outputs:
+  versions:
+    description: JSON array of SDK tags
+    value: ${{ steps.set-output.outputs.versions }}
+runs:
+  using: "composite"
+  steps:
+    - name: Fetch SDK tags
+      id: set-output
+      shell: bash
+      run: |
+        git clone --quiet --depth=1 --filter=blob:none --no-checkout https://github.com/emdgroup/mtrust-sec-kit.git repo
+        cd repo
+        git fetch --tags --quiet
+        tags=$(git tag -l | jq -R . | jq -s .)
+        echo "Available SDK versions: $tags"
+        echo "versions=$tags" >> $GITHUB_OUTPUT

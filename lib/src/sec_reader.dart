@@ -110,10 +110,7 @@ class SECReader extends CmdWrapper {
   /// Returns the required firmware version (as a range of versions) for the currently used SDK
   Future<String?> requiredFirmwareRange() async {
     final map = await _loadFirmwareCompatibility();
-    urpLogger.d('MAP: $map');
-    final packageInfo = await PackageInfo.fromPlatform(); //TODO: FIX -> 0.1.0 is the version of the app running not the package version
-    urpLogger.d("PACKAGE VERSION: ${packageInfo.version}");
-    final sdkVersion = packageInfo.version;
+    final sdkVersion = map['package_version'];
     return map[sdkVersion];
   }
 

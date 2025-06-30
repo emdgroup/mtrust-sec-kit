@@ -5,7 +5,6 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:mtrust_sec_kit/mtrust_sec_kit.dart';
-import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pub_semver/pub_semver.dart';
 
 /// [SECReader] is a class that provides a high-level API to interact with

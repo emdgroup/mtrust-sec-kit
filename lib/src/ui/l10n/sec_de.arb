@@ -7,6 +7,7 @@
     "buttonContinue": "Weiter",
     "retry": "Wiederholen",
     "connected": "Verbunden",
+    "disconnect": "Verbindung trennen",
     "turnOnPrompt": "Zum Einschalten Taste drücken",
     "timeHint": "Sobald der Vorgang gestartet wurde, haben Sie 30 Sekunden Zeit zum Scannen",
     "readyToScan": "Bereit zum Scannen",
@@ -17,7 +18,9 @@
     "scanning": "Scannen...",
     "secondsLeft": "{seconds}s\nverbleibend",
     "searchingHint": "Stellen Sie sicher, dass die LED \n am Reader blau blinkt.",
-    "incompatibleFirmware": "Inkompatible Firmware. Bitte Update durchführen!",
+    "incompatibleFirmware": "Reader Firmware inkompatibel",
+    "requiredFirmware": "Diese App benötigt einen Reader mit einer Firmware Version von",
+    "firmwareHint": "Wenn Sie der Besitzer des Readers sind, können Sie die Firmware in the M-Trust Konsole aktualisieren",
     "tokenFailed": "Die Vorbereitung für den Scan ist fehlgeschlagen. Bitte stellen Sie sicher, dass Sie eine funktionierende Internetverbindung haben.",
     "readingsLeft": "Internetverbindung in {n} Messungen notwendig"
 }

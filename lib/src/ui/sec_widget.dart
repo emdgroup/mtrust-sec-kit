@@ -61,6 +61,21 @@ class SecWidget extends StatelessWidget {
                   connectionStrategy: strategy,
                 );
 
+                final info = await reader.info();
+                urpLogger.d(info);
+                final compatible = await reader.compatibilityCheck(info.fwVersion);
+                urpLogger.d('Compatibility: $compatible');
+                final requiredFirmware = await reader.requiredFirmwareRange();
+                urpLogger.d('Required FW range: $requiredFirmware');
+                if(!compatible) {
+                  throw LdException(
+                    message: 'Required version: $requiredFirmware',
+                    exception: SecReaderException(
+                      type: SecReaderExceptionType.incompatibleFirmware,
+                    ),
+                  );
+                }
+
                 if (tokenAmount != null) {
                   reader.setTokenAmount(tokenAmount!);
                 }
@@ -73,6 +88,41 @@ class SecWidget extends StatelessWidget {
                   var message =
                       controller.state.error?.message ?? 'Unknown error';
 
+                  if(controller.state.error?.exception is SecReaderException) {
+                    final error = controller.state.error?.exception as SecReaderException;
+                    if(error.type == SecReaderExceptionType.incompatibleFirmware) {
+                      final fwRange = message.split('Required version: ').last;
+                      return LdAutoSpace(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          LdTextHs(
+                            SecLocalizations.of(context).incompatibleFirmware,
+                            textAlign: TextAlign.center,
+                          ),
+                          ldSpacerL,
+                          LdTextP(
+                            '${SecLocalizations.of(context).requiredFirmware} $fwRange',
+                            textAlign: TextAlign.center,
+                          ),
+                          ldSpacerS,
+                          LdMute(
+                            child: LdTextP(
+                              SecLocalizations.of(context).firmwareHint,
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                          ldSpacerL,
+                          LdButtonWarning(
+                            onPressed: strategy.disconnectDevice,
+                            context: context,
+                            child: Text(
+                              SecLocalizations.of(context).disconnect,
+                            ),
+                          ),
+                        ],
+                      );
+                    }
+                  }
                   if (controller.state.error?.exception.runtimeType
                       is ApiException) {
                     message = locale.tokenFailed;

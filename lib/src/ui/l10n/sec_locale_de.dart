@@ -33,6 +33,9 @@ class SecLocalizationsDe extends SecLocalizations {
   String get connected => 'Verbunden';
 
   @override
+  String get disconnect => 'Verbindung trennen';
+
+  @override
   String get turnOnPrompt => 'Zum Einschalten Taste drücken';
 
   @override
@@ -70,8 +73,15 @@ class SecLocalizationsDe extends SecLocalizations {
   }
 
   @override
-  String get incompatibleFirmware =>
-      'Inkompatible Firmware. Bitte Update durchführen!';
+  String get incompatibleFirmware => 'Reader Firmware inkompatibel';
+
+  @override
+  String get requiredFirmware =>
+      'Diese App benötigt einen Reader mit einer Firmware Version von';
+
+  @override
+  String get firmwareHint =>
+      'Wenn Sie der Besitzer des Readers sind, können Sie die Firmware in the M-Trust Konsole aktualisieren';
 
   @override
   String get tokenFailed =>

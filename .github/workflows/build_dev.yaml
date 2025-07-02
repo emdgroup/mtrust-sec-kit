@@ -71,6 +71,33 @@ jobs:
         with:
           directory: "."
 
+      # Compatibility checks
+      - name: Fetch firmware versions
+        uses: ./.github/actions/fetch-firmware-versions
+        id: fetch-firmware-versions
+        with:
+          token: ${{secrets.ELEVATED_TOKEN}}
+
+      - name: Fetch SDK versions
+        uses: ./.github/actions/fetch-sdk-versions
+        id: fetch-sdk-versions
+        with:
+          token: ${{secrets.ELEVATED_TOKEN}}
+
+      - name: Test compatibility
+        uses: ./.github/actions/test-compatibility
+        with:
+          token: ${{secrets.ELEVATED_TOKEN}}
+          firmware_version: ${{ steps.fetch-firmware-versions.outputs.versions }}
+          sdk_version: ${{ steps.fetch-sdk-versions.outputs.versions }}
+
+      - name: Generate matrix
+        uses: ./.github/actions/generate-matrix
+        with:
+          token: ${{secrets.ELEVATED_TOKEN}}
+          firmware_version: ${{ steps.fetch-firmware-versions.outputs.versions }}
+          sdk_version: ${{ steps.fetch-sdk-versions.outputs.versions }}
+
       - name: Validate Flutter
         uses: emdgroup/mtrust-urp/.github/shared_actions/validate-flutter@dev
         with:

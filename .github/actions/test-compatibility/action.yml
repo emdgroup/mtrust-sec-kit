@@ -24,7 +24,7 @@ runs:
         repository: "mtrust-urp-os"
         tag: ${{ inputs.firmware_version }}
         environment: "d"
-        token: ${{ secrets.GITHUB_TOKEN }}
+        token: ''
 
     - name: Default tests for device sim
       uses: merckgroup/mtrust-device-sim/.github/actions/test-urp-sim@dev

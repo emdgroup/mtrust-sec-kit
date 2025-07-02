@@ -100,17 +100,18 @@ class SECReader extends CmdWrapper {
     return SECReader(connectionStrategy: connectionStrategy);
   }
 
-  Future<Map<String, String>> _loadFirmwareCompatibility() async {
+  Future<Map<String, dynamic>> _loadFirmwareCompatibility() async {
     final jsonStr = await rootBundle.loadString('packages/mtrust_sec_kit/assets/firmware_compatibility.json');
-    final raw = json.decode(jsonStr) as Map<String, dynamic>;
-    return raw.map((key, value) => MapEntry(key, value.toString()));
+    return json.decode(jsonStr) as Map<String, dynamic>;
   }
 
   /// Returns the required firmware version (as a range of versions) for the currently used SDK
   Future<String?> requiredFirmwareRange() async {
     final map = await _loadFirmwareCompatibility();
-    final sdkVersion = map['package_version'];
-    return map[sdkVersion];
+    final sdkVersion = map['package_version'] as String;
+    final compat = map['compatibility'] as Map<String, dynamic>;
+    final compatibilityMap = compat.map((key, value) => MapEntry(key, value.toString()));
+    return compatibilityMap[sdkVersion];
   }
 
   /// Checks wether the current SDK is compatible with the firmware installed on the device.
@@ -120,7 +121,9 @@ class SECReader extends CmdWrapper {
       return false;
     }
 
-    final parts = fwRange.split('-').map((s) => s.trim()).toList();
+    // NOTE: It's important to split at ' - ' inlcuding the spaces as version can have an appending
+    // as described in Semantic Versioning Specification (e.g. 1.0.0-alpha)
+    final parts = fwRange.split(' - ').map((s) => s.trim()).toList();
     if(parts.length != 2) {
       return false;
     }

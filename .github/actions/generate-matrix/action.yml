@@ -22,6 +22,9 @@ runs:
 
         echo '{}' > $tmpfile
 
+        # Read package version from pubspec.yaml
+        package_version=$(grep '^version:' pubspec.yaml | awk '{print $2}')
+
         # Extract and group firmware versions per SDK
         find all-results -name compat.json | while read file; do
           sdk=$(jq -r .sdk "$file")
@@ -37,15 +40,18 @@ runs:
           ' "$tmpfile" > "$tmp" && mv "$tmp" "$tmpfile"
         done
 
-        # Convert lists to semver ranges
-        jq 'to_entries | 
+        # Convert lists to semver ranges and nest under 'compatibility'
+        compat_json=$(jq 'to_entries |
             map({
               key: .key,
               value: (
                 .value | sort_by(split(".") | map(tonumber)) |
                 "\(.[0]) - \(.[-1])"
               )
-            }) | from_entries' "$tmpfile" > assets/firmware_compatibility.json
+            }) | from_entries' "$tmpfile")
+
+        # Compose final JSON with package_version and compatibility
+        echo "{\n  \"package_version\": \"$package_version\",\n  \"compatibility\": $compat_json\n}" > assets/firmware_compatibility.json
 
     - name: Upload full matrix
       uses: actions/upload-artifact@v4

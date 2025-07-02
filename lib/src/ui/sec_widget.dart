@@ -62,11 +62,8 @@ class SecWidget extends StatelessWidget {
                 );
 
                 final info = await reader.info();
-                urpLogger.d(info);
                 final compatible = await reader.compatibilityCheck(info.fwVersion);
-                urpLogger.d('Compatibility: $compatible');
                 final requiredFirmware = await reader.requiredFirmwareRange();
-                urpLogger.d('Required FW range: $requiredFirmware');
                 if(!compatible) {
                   throw LdException(
                     message: 'Required version: $requiredFirmware',

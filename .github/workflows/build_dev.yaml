@@ -94,7 +94,6 @@ jobs:
       - name: Generate matrix
         uses: ./.github/actions/generate-matrix
         with:
-          token: ${{secrets.ELEVATED_TOKEN}}
           firmware_version: ${{ steps.fetch-firmware-versions.outputs.versions }}
           sdk_version: ${{ steps.fetch-sdk-versions.outputs.versions }}
 

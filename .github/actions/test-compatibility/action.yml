@@ -7,6 +7,9 @@ inputs:
   sdk_version:
     required: true
     description: SDK version tag
+  token:
+    required: true
+    description: GitHub token for accessing private repositories
 runs:
   using: "composite"
   steps:
@@ -23,7 +26,7 @@ runs:
         repository: merckgroup/mtrust-device-sim
         ref: dev
         path: mtrust-device-sim
-        token: ${{ secrets.ELEVATED_TOKEN }}
+        token: ${{ inputs.token }}
 
     - name: Start device sim
       id: urp-sim

@@ -17,9 +17,17 @@ runs:
         ref: ${{ inputs.sdk_version }}
         path: sdk
 
+    - name: Checkout device sim repo
+      uses: actions/checkout@v4
+      with:
+        repository: merckgroup/mtrust-device-sim
+        ref: dev
+        path: mtrust-device-sim
+        token: ${{ secrets.ELEVATED_TOKEN }}
+
     - name: Start device sim
       id: urp-sim
-      uses: merckgroup/mtrust-device-sim/.github/actions/start-urp-sim@dev
+      uses: ./mtrust-device-sim/.github/actions/start-urp-sim@dev
       with:
         repository: "mtrust-urp-os"
         tag: ${{ inputs.firmware_version }}
@@ -27,7 +35,7 @@ runs:
         token: ''
 
     - name: Default tests for device sim
-      uses: merckgroup/mtrust-device-sim/.github/actions/test-urp-sim@dev
+      uses: ./mtrust-device-sim/.github/actions/test-urp-sim@dev
 
     - name: Validate SDK
       uses: emdgroup/mtrust-urp/.github/shared_actions/validate-flutter@dev
@@ -51,7 +59,7 @@ runs:
         path: result/compat.json
 
     - name: Stop device sim
-      uses: merckgroup/mtrust-device-sim/.github/actions/stop-urp-sim@dev
+      uses: ./mtrust-device-sim/.github/actions/stop-urp-sim@dev
       with:
         websocket_pid: ${{ steps.urp-sim.outputs.websocket_pid }}
         pio_pid: ${{ steps.urp-sim.outputs.pio_pid }}

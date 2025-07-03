@@ -1,5 +1,9 @@
 name: Fetch SDK Versions
 description: Clones the SDK repo and extracts available tags.
+inputs:
+  token:
+    description: GitHub token for API access
+    required: true
 outputs:
   versions:
     description: JSON array of SDK tags
@@ -11,7 +15,7 @@ runs:
       id: set-output
       shell: bash
       env:
-        GITHUB_TOKEN: ${{ secrets.ELEVATED_TOKEN }}
+        GITHUB_TOKEN: ${{ inputs.token }}
       run: |
         REPO=emdgroup/mtrust-sec-kit
         tags=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \

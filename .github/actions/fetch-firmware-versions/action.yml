@@ -18,9 +18,32 @@ runs:
         GITHUB_TOKEN: ${{ inputs.token }}
       run: |
         REPO=merckgroup/mtrust-device-sim
-        tags=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
-          "https://api.github.com/repos/$REPO/tags?per_page=100" | jq -r '.[].name')
-        tags_json=$(echo "$tags" | jq -R . | jq -s .)
-        echo "Available firmware versions: $tags_json"
-        echo "versions=$tags_json" >> $GITHUB_OUTPUT
+        
+        # Debug: Check the raw response
+        echo "Fetching tags from $REPO..."
+        response=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+          "https://api.github.com/repos/$REPO/tags?per_page=100")
+        
+        # Debug: Show response structure
+        echo "Response preview:"
+        echo "$response" | head -c 200
+        echo "..."
+        
+        # Check if response is valid JSON and contains expected data
+        if echo "$response" | jq -e 'type == "array"' > /dev/null; then
+          echo "Valid JSON array received"
+          tags=$(echo "$response" | jq -r '.[].name // empty')
+          if [ -n "$tags" ]; then
+            tags_json=$(echo "$tags" | jq -R . | jq -s .)
+            echo "Available firmware versions: $tags_json"
+            echo "versions=$tags_json" >> $GITHUB_OUTPUT
+          else
+            echo "No tags found in response"
+            echo "versions=[]" >> $GITHUB_OUTPUT
+          fi
+        else
+          echo "Invalid response or error from GitHub API"
+          echo "Full response: $response"
+          echo "versions=[]" >> $GITHUB_OUTPUT
+        fi
         

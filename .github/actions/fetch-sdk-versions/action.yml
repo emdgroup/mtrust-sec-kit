@@ -7,13 +7,15 @@ outputs:
 runs:
   using: "composite"
   steps:
-    - name: Fetch SDK tags
+    - name: Fetch SDK tags via REST
       id: set-output
       shell: bash
+      env:
+        GITHUB_TOKEN: ${{ secrets.ELEVATED_TOKEN }}
       run: |
-        git clone --quiet --depth=1 --filter=blob:none --no-checkout https://github.com/emdgroup/mtrust-sec-kit.git repo
-        cd repo
-        git fetch --tags --quiet
-        tags=$(git tag -l | jq -R . | jq -s .)
-        echo "Available SDK versions: $tags"
-        echo "versions=$tags" >> $GITHUB_OUTPUT
+        REPO=emdgroup/mtrust-sec-kit
+        tags=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+          "https://api.github.com/repos/$REPO/tags?per_page=100" | jq -r '.[].name')
+        tags_json=$(echo "$tags" | jq -R . | jq -s .)
+        echo "Available SDK versions: $tags_json"
+        echo "versions=$tags_json" >> $GITHUB_OUTPUT

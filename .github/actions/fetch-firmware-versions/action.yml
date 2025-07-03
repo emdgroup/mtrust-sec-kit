@@ -7,14 +7,16 @@ outputs:
 runs:
   using: "composite"
   steps:
-    - name: Fetch firmware tags
+    - name: Fetch firmware tags via REST
       id: set-output
       shell: bash
+      env:
+        GITHUB_TOKEN: ${{ secrets.ELEVATED_TOKEN }}
       run: |
-        git clone --quiet --depth=1 --filter=blob:none --no-checkout https://github.com/merckgroup/mtrust-device-sim.git repo
-        cd repo
-        git fetch --tags --quiet
-        tags=$(git tag -l | jq -R . | jq -s .)
-        echo "Available firmware versions: $tags"
-        echo "versions=$tags" >> $GITHUB_OUTPUT
+        REPO=merckgroup/mtrust-device-sim
+        tags=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+          "https://api.github.com/repos/$REPO/tags?per_page=100" | jq -r '.[].name')
+        tags_json=$(echo "$tags" | jq -R . | jq -s .)
+        echo "Available firmware versions: $tags_json"
+        echo "versions=$tags_json" >> $GITHUB_OUTPUT
         

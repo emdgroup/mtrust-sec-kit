@@ -34,7 +34,7 @@ runs:
           echo "Valid JSON array received"
           tags=$(echo "$response" | jq -r '.[].name // empty')
           if [ -n "$tags" ]; then
-            tags_json=$(echo "$tags" | jq -R . | jq -s .)
+            tags_json=$(echo "$tags" | jq -R . | jq -s -c .)
             echo "Available SDK versions: $tags_json"
             echo "versions=$tags_json" >> $GITHUB_OUTPUT
           else

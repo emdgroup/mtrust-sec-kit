@@ -56,7 +56,27 @@ jobs:
         with:
           directory: .
 
-      # Compatibility checks
+      - name: Validate Flutter
+        uses: emdgroup/mtrust-urp/.github/shared_actions/validate-flutter@dev
+        with:
+          directory: .
+          is_package: true
+
+      - name: Check licenses
+        uses: emdgroup/mtrust-urp/.github/shared_actions/check-dart-licenses@dev
+        with:
+          directory: .
+
+  matrix-generation:
+    name: Generate Compatibility Matrix
+    needs: validate_pr
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.generate-matrix.outputs.matrix }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
       - name: Fetch firmware versions
         uses: ./.github/actions/fetch-firmware-versions
         id: fetch-firmware-versions
@@ -69,26 +89,56 @@ jobs:
         with:
           token: ${{secrets.ELEVATED_TOKEN}}
 
+      - name: Generate compatibility matrix
+        id: generate-matrix
+        run: |
+          # Parse the JSON arrays and create a matrix
+          firmware_versions=$(echo '${{ steps.fetch-firmware-versions.outputs.versions }}' | jq -r '.[]')
+          sdk_versions=$(echo '${{ steps.fetch-sdk-versions.outputs.versions }}' | jq -r '.[]')
+          
+          # Create matrix combinations
+          matrix_combinations="[]"
+          while IFS= read -r firmware; do
+            while IFS= read -r sdk; do
+              combination=$(jq -n --arg fw "$firmware" --arg sdk "$sdk" '{firmware: $fw, sdk: $sdk}')
+              matrix_combinations=$(echo "$matrix_combinations" | jq --argjson combo "$combination" '. += [$combo]')
+            done <<< "$sdk_versions"
+          done <<< "$firmware_versions"
+          
+          echo "matrix=$matrix_combinations" >> $GITHUB_OUTPUT
+          echo "Generated matrix with $(echo "$matrix_combinations" | jq length) combinations"
+
+  compatibility-tests:
+    name: Compatibility Tests
+    needs: matrix-generation
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include: ${{ fromJson(needs.matrix-generation.outputs.matrix) }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
       - name: Test compatibility
         uses: ./.github/actions/test-compatibility
         with:
           token: ${{secrets.ELEVATED_TOKEN}}
-          firmware_version: ${{ steps.fetch-firmware-versions.outputs.versions }}
-          sdk_version: ${{ steps.fetch-sdk-versions.outputs.versions }}
+          firmware_version: ${{ matrix.firmware }}
+          sdk_version: ${{ matrix.sdk }}
+
+  generate-compatibility-matrix:
+    name: Generate Compatibility Matrix
+    needs: [build_library, compatibility-tests]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Generate matrix
         uses: ./.github/actions/generate-matrix
-        with:
-          firmware_version: ${{ steps.fetch-firmware-versions.outputs.versions }}
-          sdk_version: ${{ steps.fetch-sdk-versions.outputs.versions }}
 
-      - name: Validate Flutter
-        uses: emdgroup/mtrust-urp/.github/shared_actions/validate-flutter@dev
+      - name: Upload compatibility matrix artifact
+        uses: actions/upload-artifact@v4
         with:
-          directory: .
-          is_package: true
-
-      - name: Check licenses
-        uses: emdgroup/mtrust-urp/.github/shared_actions/check-dart-licenses@dev
-        with:
-          directory: .
+          name: firmware-compatibility-matrix
+          path: assets/firmware_compatibility.json

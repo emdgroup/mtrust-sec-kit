@@ -96,17 +96,33 @@ jobs:
           firmware_versions=$(echo '${{ steps.fetch-firmware-versions.outputs.versions }}' | jq -r '.[]')
           sdk_versions=$(echo '${{ steps.fetch-sdk-versions.outputs.versions }}' | jq -r '.[]')
           
-          # Create matrix combinations
+          # Create matrix combinations using a more robust approach
           matrix_combinations="[]"
+          count=0
+          
           while IFS= read -r firmware; do
             while IFS= read -r sdk; do
+              # Create combination object
               combination=$(jq -n --arg fw "$firmware" --arg sdk "$sdk" '{firmware: $fw, sdk: $sdk}')
+              
+              # Add to matrix array
               matrix_combinations=$(echo "$matrix_combinations" | jq --argjson combo "$combination" '. += [$combo]')
+              count=$((count + 1))
             done <<< "$sdk_versions"
           done <<< "$firmware_versions"
           
-          echo "matrix=$matrix_combinations" >> $GITHUB_OUTPUT
-          echo "Generated matrix with $(echo "$matrix_combinations" | jq length) combinations"
+          # Validate JSON before output
+          if echo "$matrix_combinations" | jq empty 2>/dev/null; then
+            echo "matrix=$matrix_combinations" >> $GITHUB_OUTPUT
+            echo "Generated matrix with $count combinations"
+            echo "Matrix preview:"
+            echo "$matrix_combinations" | jq '.[0:3]' # Show first 3 combinations
+          else
+            echo "Error: Invalid JSON generated"
+            echo "Generated content:"
+            echo "$matrix_combinations"
+            exit 1
+          fi
 
   compatibility-tests:
     name: Compatibility Tests

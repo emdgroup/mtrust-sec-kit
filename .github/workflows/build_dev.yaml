@@ -110,7 +110,19 @@ jobs:
           firmware_versions=$(echo '${{ steps.fetch-firmware-versions.outputs.versions }}' | jq -r '.[]')
           sdk_versions=$(echo '${{ steps.fetch-sdk-versions.outputs.versions }}' | jq -r '.[]')
           
-          # Create matrix combinations using a more robust approach
+          # Get only the 10 latest versions of each type
+          # Sort by version and take the latest 10
+          latest_firmware=$(echo "$firmware_versions" | sort -V | tail -10)
+          latest_sdk=$(echo "$sdk_versions" | sort -V | tail -10)
+          
+          echo "Latest 10 firmware versions:"
+          echo "$latest_firmware"
+          echo ""
+          echo "Latest 10 SDK versions:"
+          echo "$latest_sdk"
+          echo ""
+          
+          # Create matrix combinations using the latest versions
           matrix_combinations="[]"
           count=0
           
@@ -122,13 +134,13 @@ jobs:
               # Add to matrix array
               matrix_combinations=$(echo "$matrix_combinations" | jq --argjson combo "$combination" '. += [$combo]')
               count=$((count + 1))
-            done <<< "$sdk_versions"
-          done <<< "$firmware_versions"
+            done <<< "$latest_sdk"
+          done <<< "$latest_firmware"
           
           # Validate JSON before output
           if echo "$matrix_combinations" | jq empty 2>/dev/null; then
             echo "matrix=$matrix_combinations" >> $GITHUB_OUTPUT
-            echo "Generated matrix with $count combinations"
+            echo "Generated matrix with $count combinations (latest 10 firmware × latest 10 SDK versions)"
             echo "Matrix preview:"
             echo "$matrix_combinations" | jq '.[0:3]' # Show first 3 combinations
           else

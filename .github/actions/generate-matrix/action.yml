@@ -40,21 +40,22 @@ runs:
           ' "$tmpfile" > "$tmp" && mv "$tmp" "$tmpfile"
         done
 
-        # Convert lists to semver ranges and nest under 'compatibility'
-        compat_json=$(jq 'to_entries |
-            map({
-              key: .key,
-              value: (
-                .value | sort_by(split(".") | map(tonumber)) |
-                "\(.[0]) - \(.[-1])"
-              )
-            }) | from_entries' "$tmpfile")
-
-        # Compose final JSON with package_version and compatibility
-        jq --arg version "$package_version" --argjson compat "$compat_json" '{
-          package_version: $version,
-          compatibility: $compat
-        }' > assets/firmware_compatibility.json
+        # Convert lists to semver ranges and create final JSON structure
+        jq --arg version "$package_version" '
+          {
+            package_version: $version,
+            compatibility: (
+              to_entries |
+              map({
+                key: .key,
+                value: (
+                  .value | sort_by(split(".") | map(tonumber)) |
+                  "\(.[0]) - \(.[-1])"
+                )
+              }) | from_entries
+            )
+          }
+        ' "$tmpfile" > assets/firmware_compatibility.json
 
     - name: Upload full matrix
       uses: actions/upload-artifact@v4

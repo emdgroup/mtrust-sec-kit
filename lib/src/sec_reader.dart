@@ -1,8 +1,11 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:mtrust_sec_kit/mtrust_sec_kit.dart';
+import 'package:pub_semver/pub_semver.dart';
 
 /// [SECReader] is a class that provides a high-level API to interact with
 /// a SEC reader.
@@ -95,6 +98,48 @@ class SECReader extends CmdWrapper {
     }
 
     return SECReader(connectionStrategy: connectionStrategy);
+  }
+
+  Future<Map<String, dynamic>> _loadFirmwareCompatibility() async {
+    final jsonStr = await rootBundle.loadString('packages/mtrust_sec_kit/assets/firmware_compatibility.json');
+    return json.decode(jsonStr) as Map<String, dynamic>;
+  }
+
+  /// Returns the required firmware version (as a range of versions) for the currently used SDK
+  Future<String?> requiredFirmwareRange() async {
+    final map = await _loadFirmwareCompatibility();
+    final sdkVersion = map['package_version'] as String;
+    final compat = map['compatibility'] as Map<String, dynamic>;
+    final compatibilityMap = compat.map((key, value) => MapEntry(key, value.toString()));
+    return compatibilityMap[sdkVersion];
+  }
+
+  /// Checks wether the current SDK is compatible with the firmware installed on the device.
+  Future<bool> compatibilityCheck(String firmwareVersion) async {
+    final fwRange = await requiredFirmwareRange();
+    if(fwRange == null) {
+      return false;
+    }
+
+    // NOTE: It's important to split at ' - ' inlcuding the spaces as version can have an appending
+    // as described in Semantic Versioning Specification (e.g. 1.0.0-alpha)
+    final parts = fwRange.split(' - ').map((s) => s.trim()).toList();
+    if(parts.length != 2) {
+      return false;
+    }
+
+    final fwMin = Version.parse(parts[0]);
+    final fwMax = Version.parse(parts[1]);
+    final currentFw = Version.parse(firmwareVersion);
+
+    final constraint = VersionRange(
+      min: fwMin,
+      max: fwMax,
+      includeMin: true,
+      includeMax: true,
+    );
+
+    return constraint.allows(currentFw);
   }
 
   Future<UrpResponse> _addCommandToQueue({

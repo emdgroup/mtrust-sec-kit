@@ -8,6 +8,7 @@
     "buttonContinue": "Continue",
     "retry": "Retry",
     "connected": "Connected",
+    "disconnect": "Disconnect",
     "turnOnPrompt": "Press the button on the reader to turn it on",
     "timeHint": "Once started you will have 30s to scan",
     "readyToScan": "Ready to scan",
@@ -19,7 +20,9 @@
     "searching": "Searching...",
     "scanning": "Scanning...",
     "secondsLeft": "{seconds}s\nleft",
-    "incompatibleFirmware": "Firmware incompatible. Please update!",
+    "incompatibleFirmware": "Reader version incompatible",
+    "requiredFirmware": "This app requires a reader with a firmware version of",
+    "firmwareHint": "If you are the device owner, you can update the device firmware in the M-Trust console",
     "tokenFailed": "Failed to prepare for scan. Please make sure you have a working internet connection",
     "readingsLeft": "Internet connection required in {n} measurements"
 }

@@ -32,7 +32,7 @@ class ScanningView extends StatelessWidget {
 
   /// Function to call when the verification fails.
   final Future<void> Function(
-    SecReaderException? exception,
+    SecReaderException exception,
   ) onVerificationFailed;
 
   @override

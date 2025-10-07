@@ -35,7 +35,9 @@ class SecWidget extends StatelessWidget {
   ) onVerificationDone;
 
   /// Will be called if a verification failed.
-  final Future<void> Function(SecReaderException?) onVerificationFailed;
+  final Future<void> Function(
+    SecReaderException exception,
+  ) onVerificationFailed;
 
   /// Amount of token to be requested on token refresh.
   final int? tokenAmount;

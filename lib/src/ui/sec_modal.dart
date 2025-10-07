@@ -43,7 +43,9 @@ class SecModalBuilder extends StatelessWidget {
   final void Function(UrpSecSecureMeasurement measurement) onVerificationDone;
 
   /// Will be called if a verification failed.
-  final void Function(SecReaderException?) onVerificationFailed;
+  final void Function(
+    SecReaderException exception,
+  ) onVerificationFailed;
 
   /// Called when the user dismisses the sheet.
   final void Function()? onDismiss;
@@ -130,7 +132,7 @@ class SecResultFailed extends SecResult {
   SecResultFailed(this.exception);
 
   /// The exception that caused the failure.
-  final SecReaderException? exception;
+  final SecReaderException exception;
 }
 
 /// Build a modal using [SecWidget], pops the result of the SEC verification.

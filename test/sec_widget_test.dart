@@ -27,7 +27,7 @@ void main() {
                 storageAdapter: storageAdapter,
                 payload: '',
                 onVerificationDone: (_) async {},
-                onVerificationFailed: () async {},
+                onVerificationFailed: (_) async {},
               ),
             ),
           );
@@ -48,7 +48,7 @@ void main() {
                 storageAdapter: storageAdapter,
                 payload: '',
                 onVerificationDone: (_) async {},
-                onVerificationFailed: () async {},
+                onVerificationFailed: (_) async {},
               ),
             ),
           );
@@ -74,7 +74,7 @@ void main() {
                 storageAdapter: storageAdapter,
                 payload: '',
                 onVerificationDone: (_) async {},
-                onVerificationFailed: () async {},
+                onVerificationFailed: (_) async {},
               ),
             ),
           );
@@ -106,7 +106,7 @@ void main() {
                 storageAdapter: storageAdapter,
                 payload: '',
                 onVerificationDone: (_) async {},
-                onVerificationFailed: () async {},
+                onVerificationFailed: (_) async {},
               ),
             ),
           );
@@ -142,7 +142,7 @@ void main() {
                 storageAdapter: storageAdapter,
                 payload: '',
                 onVerificationDone: (_) async {},
-                onVerificationFailed: () async {},
+                onVerificationFailed: (_) async {},
               ),
             ),
           );
@@ -179,7 +179,7 @@ void main() {
                 storageAdapter: storageAdapter,
                 payload: '',
                 onVerificationDone: (_) async {},
-                onVerificationFailed: () async {},
+                onVerificationFailed: (_) async {},
               ),
             ),
           );

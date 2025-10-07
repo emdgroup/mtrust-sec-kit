@@ -31,7 +31,9 @@ class ScanningView extends StatelessWidget {
   ) onVerificationDone;
 
   /// Function to call when the verification fails.
-  final Future<void> Function() onVerificationFailed;
+  final Future<void> Function(
+    SecReaderException? exception,
+  ) onVerificationFailed;
 
   @override
   Widget build(BuildContext context) {
@@ -193,7 +195,10 @@ class ScanningView extends StatelessWidget {
                       width: double.infinity,
                       borderRadius: LdTheme.of(context).radius(LdSize.l),
                       size: LdSize.l,
-                      onPressed: onVerificationFailed,
+                      onPressed: () => onVerificationFailed(
+                        measurementController.state.error?.exception
+                            as SecReaderException?,
+                      ),
                       loadingText: SecLocalizations.of(context).disconnecting,
                       context: context,
                       child: Text(

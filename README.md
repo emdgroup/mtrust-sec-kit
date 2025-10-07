@@ -95,7 +95,9 @@ To display the SEC Modal, utilize the `SecModalBuilder` widget. It requires a co
     strategy: _connectionStrategy,
     payload: // Payload,
     onVerificationDone: (mesurement) {},
-    onVerificationFailed: () {},
+    onVerificationFailed: (exception) {
+      // Handle verification failure. The exception provides details about the cause.
+    },
     onDismiss: (){ } // Optionally 
     canDismiss: true, // Define whether the user can dismiss the modal
     builder: (context, openModal) {

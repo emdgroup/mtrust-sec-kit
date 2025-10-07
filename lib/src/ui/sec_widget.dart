@@ -35,7 +35,7 @@ class SecWidget extends StatelessWidget {
   ) onVerificationDone;
 
   /// Will be called if a verification failed.
-  final Future<void> Function() onVerificationFailed;
+  final Future<void> Function(SecReaderException?) onVerificationFailed;
 
   /// Amount of token to be requested on token refresh.
   final int? tokenAmount;
@@ -104,7 +104,10 @@ class SecWidget extends StatelessWidget {
                         )
                       else
                         LdButtonWarning(
-                          onPressed: onVerificationFailed,
+                          onPressed: () => onVerificationFailed(
+                            controller.state.error?.exception
+                                as SecReaderException?,
+                          ),
                           context: context,
                           child: Text(
                             locale.done,
@@ -138,9 +141,9 @@ class SecWidget extends StatelessWidget {
                     controller.reset();
                     await onVerificationDone(measurement);
                   },
-                  onVerificationFailed: () async {
+                  onVerificationFailed: (e) async {
                     controller.reset();
-                    await onVerificationFailed();
+                    await onVerificationFailed(e);
                   },
                   remainingScans: controller.state.result?.gsa,
                 );

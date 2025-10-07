@@ -30,6 +30,31 @@ class SecReaderException implements Exception {
     this.type = SecReaderExceptionType.unspecified,
   });
 
+  /// Factory constructor that converts any exception to a [SecReaderException].
+  ///
+  /// If the exception is already a [SecReaderException], it returns it as-is.
+  /// Otherwise, it creates a new [SecReaderException] with the exception's
+  /// string representation as the message and [SecReaderExceptionType.unspecified]
+  /// as the type.
+  ///
+  /// [exception] The exception to convert. Can be null.
+  /// [fallbackMessage] An optional fallback message to use if both the exception
+  /// and its string representation are null.
+  factory SecReaderException.from(
+    dynamic exception, {
+    String? fallbackMessage,
+  }) {
+    if (exception is SecReaderException) {
+      return exception;
+    }
+
+    return SecReaderException(
+      message: exception?.toString() ??
+          fallbackMessage ??
+          'Unspecified SEC reader error',
+    );
+  }
+
   /// A message providing additional details about the SEC reader error.
   ///
   /// If not specified during the exception creation, a default message

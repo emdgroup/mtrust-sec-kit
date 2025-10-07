@@ -104,10 +104,13 @@ class SecWidget extends StatelessWidget {
                         )
                       else
                         LdButtonWarning(
-                          onPressed: () => onVerificationFailed(
-                            controller.state.error?.exception
-                                as SecReaderException?,
-                          ),
+                          onPressed: () {
+                            final secException = SecReaderException.from(
+                              controller.state.error?.exception,
+                              fallbackMessage: controller.state.error?.message,
+                            );
+                            return onVerificationFailed(secException);
+                          },
                           context: context,
                           child: Text(
                             locale.done,

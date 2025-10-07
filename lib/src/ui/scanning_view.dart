@@ -163,11 +163,9 @@ class ScanningView extends StatelessWidget {
               case (LdSubmitStateType.error):
                 var message =
                     SecLocalizations.of(context).verificationFailedMessage;
-                if (measurementController.state.error?.exception.runtimeType ==
-                    SecReaderExceptionType) {
-                  final error = measurementController.state.error?.exception
-                      as SecReaderException;
-                  if (error.type ==
+                final exception = measurementController.state.error?.exception;
+                if (exception is SecReaderException) {
+                  if (exception.type ==
                       SecReaderExceptionType.incompatibleFirmware) {
                     message = SecLocalizations.of(context).incompatibleFirmware;
                   }
@@ -195,10 +193,14 @@ class ScanningView extends StatelessWidget {
                       width: double.infinity,
                       borderRadius: LdTheme.of(context).radius(LdSize.l),
                       size: LdSize.l,
-                      onPressed: () => onVerificationFailed(
-                        measurementController.state.error?.exception
-                            as SecReaderException?,
-                      ),
+                      onPressed: () {
+                        final secException = SecReaderException.from(
+                          measurementController.state.error?.exception,
+                          fallbackMessage:
+                              measurementController.state.error?.message,
+                        );
+                        return onVerificationFailed(secException);
+                      },
                       loadingText: SecLocalizations.of(context).disconnecting,
                       context: context,
                       child: Text(

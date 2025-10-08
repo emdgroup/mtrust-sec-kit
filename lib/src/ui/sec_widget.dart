@@ -15,6 +15,7 @@ class SecWidget extends StatelessWidget {
     required this.onVerificationDone,
     required this.onVerificationFailed,
     this.storageAdapter,
+    this.readerConnectorMode = ReaderConnectorMode.preferLastConnected,
     this.tokenAmount,
     super.key,
   });
@@ -22,6 +23,9 @@ class SecWidget extends StatelessWidget {
   /// The StorageAdapter to use for persisting the last connected and paired
   /// devices.
   final StorageAdapter? storageAdapter;
+
+  /// The mode to use when connecting to a device.
+  final ReaderConnectorMode readerConnectorMode;
 
   /// The strategy to use for the connection.
   final ConnectionStrategy strategy;
@@ -51,6 +55,7 @@ class SecWidget extends StatelessWidget {
       child: DeviceConnector(
         connectionStrategy: strategy,
         storageAdapter: storageAdapter,
+        mode: readerConnectorMode,
         connectedBuilder: (BuildContext context) {
           return LdSubmit<UrpSecPrimeResponse?>(
             config: LdSubmitConfig<UrpSecPrimeResponse?>(

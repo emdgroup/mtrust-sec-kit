@@ -34,7 +34,8 @@ class SecWidget extends StatelessWidget {
     UrpSecSecureMeasurement measurement,
   ) onVerificationDone;
 
-  /// Will be called if a verification failed.
+  /// Called when verification fails; receives the underlying [SecReaderException]
+  /// when available, otherwise `null`.
   final Future<void> Function(
     SecReaderException exception,
   ) onVerificationFailed;

@@ -15,8 +15,7 @@ dependencies:
   liquid_flutter: ^22.0.4
   mtrust_urp_core:
     path: ../mtrust-urp/mtrust_urp_core
-  mtrust_urp_types:
-    path: ../mtrust-urp-types/packages/urp_types_dart
+  mtrust_urp_types: ^6.2.1
   mtrust_urp_ui: 
     path: ../mtrust-urp/mtrust_urp_ui
 dev_dependencies:

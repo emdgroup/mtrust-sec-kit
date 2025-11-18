@@ -133,7 +133,8 @@ class SECReader extends CmdWrapper {
       return UrpSecPrimeResponse.fromBuffer(res.payload);
     } catch (e) {
       if (e is DeviceError) {
-        if (e.errorCode != 4) {
+        if (e.errorCode.value != 4) {
+          // urpLeaseError
           rethrow;
         }
         final publicKey = await getPublicKey();
@@ -221,20 +222,7 @@ class SECReader extends CmdWrapper {
     );
     final res = await _addDeviceCmdToQueue(deviceCommand: cmd);
 
-    if (!res.hasPayload()) {
-      throw SecReaderException(
-        message: 'Failed to measure!',
-        type: SecReaderExceptionType.measurementFailed,
-      );
-    }
-    try {
-      return UrpSecSecureMeasurement.fromBuffer(res.payload);
-    } catch (e) {
-      throw SecReaderException(
-        message: 'Incompatible device firmware version. Please update!',
-        type: SecReaderExceptionType.incompatibleFirmware,
-      );
-    }
+    return UrpSecSecureMeasurement.fromBuffer(res.payload);
   }
 
   /// Stop measurement

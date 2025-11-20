@@ -230,7 +230,8 @@ class SECReader extends CmdWrapper {
     final cmd = UrpSecDeviceCommand(
       command: UrpSecCommand.urpSecStopMeasurement,
     );
-    await _addDeviceCmdToQueue(deviceCommand: cmd);
+    final res = await _addDeviceCmdToQueue(deviceCommand: cmd);
+    print(res);
   }
 
   /// Get model info. Returns the result if successful.

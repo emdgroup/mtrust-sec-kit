@@ -111,6 +111,11 @@ class SECReader extends CmdWrapper {
     );
   }
 
+  @override
+  Future<UrpResponse> addCoreCmdToQueue(UrpCoreCommand coreCommand) async {
+    return _addCommandToQueue(coreCommand: coreCommand);
+  }
+
   /// Pings the device.
   @override
   Future<void> ping() async {
@@ -170,15 +175,6 @@ class SECReader extends CmdWrapper {
       throw SecReaderException(message: 'Failed to get name');
     }
     return UrpDeviceName.fromBuffer(res.payload);
-  }
-
-  /// Pair the device.
-  @override
-  Future<void> pair() async {
-    final cmd = UrpCoreCommand(
-      command: UrpCommand.urpPair,
-    );
-    await _addCommandToQueue(coreCommand: cmd);
   }
 
   /// Unpair the device.
@@ -340,7 +336,7 @@ class SECReader extends CmdWrapper {
       return UrpSecPrimeResponse.fromBuffer(res.payload);
     } catch (e) {
       if (e is DeviceError) {
-        if (e.errorCode != 4) {
+        if (e.errorCode != UrpErrorCode.urpLeaseError) {
           rethrow;
         }
         final publicKey = await getPublicKey();

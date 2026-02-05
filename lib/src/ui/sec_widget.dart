@@ -189,6 +189,7 @@ class _SecExceptionMapper extends LdExceptionMapper {
           SecReaderExceptionType.unspecified => localizations.unknownError,
         },
         canRetry: retriable.contains(e.type),
+        exception: e,
       );
     }
 

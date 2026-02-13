@@ -38,8 +38,9 @@ class SecReaderException implements Exception {
   /// as the type.
   ///
   /// [exception] The exception to convert. Can be null.
-  /// [fallbackMessage] An optional fallback message to use if both the exception
-  /// and its string representation are null.
+  /// [fallbackMessage] An optional fallback message to use when [exception]
+  /// is null. If both [exception] and [fallbackMessage] are null, a default
+  /// message will be used.
   factory SecReaderException.from(
     dynamic exception, {
     String? fallbackMessage,

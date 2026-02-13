@@ -219,10 +219,10 @@ void main() {
     urpUiDisableAnimations = true;
     ldDisableAnimations = true;
 
-    // Create a strategy that throws an error during priming
+    // Create a strategy that simulates a measurement failure
     final strategy = CompleterStrategy(
       withReaders: true,
-      // return a response with an empty payload to simulate a measurement failure
+      // Return a response with an empty payload to simulate a measurement failure
       measurementResponse: UrpResponse(),
     );
 

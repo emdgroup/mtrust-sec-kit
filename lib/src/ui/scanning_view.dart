@@ -32,7 +32,7 @@ class ScanningView extends StatelessWidget {
 
   /// Called when the verification fails.
   ///
-  /// The [exception] is extracted from the [LdException] that was produced by
+  /// The exception is extracted from the mapped exception produced by
   /// the exception mapper. If the original exception was already a
   /// [SecReaderException], it is passed through directly. Otherwise, a new
   /// [SecReaderException] is created using the mapper's localized message.

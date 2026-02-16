@@ -1,6 +1,3 @@
-import 'package:liquid_flutter/liquid_flutter.dart';
-import 'package:mtrust_sec_kit/mtrust_sec_kit.dart';
-
 /// Enumerates the types of exceptions that can be thrown by the SEC reader.
 enum SecReaderExceptionType {
   /// Firmware version installed on the device is incompatible
@@ -24,12 +21,11 @@ enum SecReaderExceptionType {
 
 /// Exception thrown to indicate errors from the SEC reader.
 ///
-/// All errors thrown by [SECReader] methods use this type, with a
+/// All errors thrown by `SECReader` methods use this type, with a
 /// [SecReaderExceptionType] to categorize the failure. Inside the widget UI,
-/// [_SecExceptionMapper] translates these into localized [LdException]s for
-/// display, preserving the original [SecReaderException] in
-/// [LdException.exception] so that [onVerificationFailed] callbacks can
-/// access the typed failure cause.
+/// the exception mapper translates these into localized exceptions for
+/// display, preserving the original [SecReaderException] so that
+/// `onVerificationFailed` callbacks can access the typed failure cause.
 class SecReaderException implements Exception {
   /// Creates a new instance of [SecReaderException].
   ///
@@ -48,12 +44,12 @@ class SecReaderException implements Exception {
   /// preserving its [type]. Otherwise, a new instance is created with
   /// [SecReaderExceptionType.unspecified].
   ///
-  /// The [fallbackMessage] is preferred over [exception.toString()] when
-  /// creating a new instance. This is typically the localized message from
-  /// [LdException.message] produced by the exception mapper.
+  /// The [fallbackMessage] is preferred over `exception.toString()` when
+  /// creating a new instance. This is typically the localized error message
+  /// produced by the exception mapper.
   ///
-  /// Used by the widget layer to extract a [SecReaderException] from an
-  /// [LdException] for the [onVerificationFailed] callback.
+  /// Used by the widget layer to extract a [SecReaderException] from a
+  /// mapped exception for the `onVerificationFailed` callback.
   factory SecReaderException.from(
     dynamic exception, {
     String? fallbackMessage,

@@ -36,8 +36,8 @@ class SecWidget extends StatelessWidget {
 
   /// Called when verification fails.
   ///
-  /// The [exception] is extracted from the [LdException] produced by
-  /// [_SecExceptionMapper]. If the original exception was a
+  /// The exception is extracted from the mapped exception produced by
+  /// the exception mapper. If the original exception was a
   /// [SecReaderException], it is returned as-is (preserving its [SecReaderExceptionType]).
   /// Otherwise, a new [SecReaderException] is created with the mapper's
   /// localized message and [SecReaderExceptionType.unspecified].
@@ -169,14 +169,13 @@ class SecWidget extends StatelessWidget {
   }
 }
 
-/// Maps exceptions thrown during the SEC workflow into [LdException]s
-/// for display by Liquid's error UI.
+/// Maps exceptions thrown during the SEC workflow into localized
+/// [LdException]s for display by Liquid's error UI.
 ///
 /// Handles three categories of exceptions:
 /// - [SecReaderException]: Mapped to localized messages based on
-///   [SecReaderExceptionType]. The original exception is preserved in
-///   [LdException.exception] so it can be extracted by [onVerificationFailed]
-///   callbacks.
+///   [SecReaderExceptionType]. The original exception is preserved so it
+///   can be extracted by `onVerificationFailed` callbacks.
 /// - [DeviceError]: Raw BLE device errors that propagated through [SECReader]
 ///   without being wrapped. Presented as a generic retriable error.
 /// - All other exceptions: Delegated to the base [LdExceptionMapper].

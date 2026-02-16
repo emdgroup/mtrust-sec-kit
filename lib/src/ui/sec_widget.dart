@@ -174,6 +174,8 @@ class _SecExceptionMapper extends LdExceptionMapper {
       final retriable = {
         SecReaderExceptionType.tokenFailed,
         SecReaderExceptionType.measurementFailed,
+        SecReaderExceptionType.connectionFailed,
+        SecReaderExceptionType.commandFailed,
         SecReaderExceptionType.unspecified,
       };
       return LdException(
@@ -183,6 +185,8 @@ class _SecExceptionMapper extends LdExceptionMapper {
             secLocalizations.incompatibleFirmware,
           SecReaderExceptionType.measurementFailed =>
             secLocalizations.verificationFailedMessage,
+          SecReaderExceptionType.connectionFailed => localizations.unknownError,
+          SecReaderExceptionType.commandFailed => localizations.unknownError,
           SecReaderExceptionType.unspecified => localizations.unknownError,
         },
         canRetry: retriable.contains(e.type),

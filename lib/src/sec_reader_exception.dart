@@ -9,6 +9,12 @@ enum SecReaderExceptionType {
   /// Failed to get or install new token
   tokenFailed,
 
+  /// Failed to connect to a reader
+  connectionFailed,
+
+  /// A command sent to the reader failed or returned an unexpected response
+  commandFailed,
+
   /// Unspecified error
   unspecified,
 }

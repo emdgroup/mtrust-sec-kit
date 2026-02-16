@@ -457,7 +457,7 @@ class SECReader extends CmdWrapper {
     final res = await _addCommandToQueue(deviceCommand: cmd);
 
     if (!res.hasPayload()) {
-      throw Exception('Failed to get model info');
+      throw SecReaderException(message: 'Failed to get model info');
     }
     final urpSecModels = UrpSecModels.fromBuffer(res.payload);
     return urpSecModels.models;

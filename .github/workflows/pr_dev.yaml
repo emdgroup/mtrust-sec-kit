@@ -66,3 +66,7 @@ jobs:
         uses: emdgroup/mtrust-urp/.github/shared_actions/check-dart-licenses@dev
         with:
           directory: .
+
+  api-guard:
+    if: ${{ github.actor != 'dependabot[bot]' }}
+    uses: emdgroup/mtrust-api-guard/.github/workflows/pr_workflow.yaml@main

@@ -30,7 +30,12 @@ class ScanningView extends StatelessWidget {
     UrpSecSecureMeasurement measurement,
   ) onVerificationDone;
 
-  /// Function to call when the verification fails.
+  /// Called when the verification fails.
+  ///
+  /// The [exception] is extracted from the [LdException] that was produced by
+  /// the exception mapper. If the original exception was already a
+  /// [SecReaderException], it is passed through directly. Otherwise, a new
+  /// [SecReaderException] is created using the mapper's localized message.
   final Future<void> Function(
     SecReaderException exception,
   ) onVerificationFailed;

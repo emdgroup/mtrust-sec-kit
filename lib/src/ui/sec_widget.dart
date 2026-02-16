@@ -34,8 +34,17 @@ class SecWidget extends StatelessWidget {
     UrpSecSecureMeasurement measurement,
   ) onVerificationDone;
 
-  /// Called when verification fails; receives a [SecReaderException]
-  /// describing the failure.
+  /// Called when verification fails.
+  ///
+  /// The [exception] is extracted from the [LdException] produced by
+  /// [_SecExceptionMapper]. If the original exception was a
+  /// [SecReaderException], it is returned as-is (preserving its [SecReaderExceptionType]).
+  /// Otherwise, a new [SecReaderException] is created with the mapper's
+  /// localized message and [SecReaderExceptionType.unspecified].
+  ///
+  /// Use [SecReaderException.type] to distinguish failure causes
+  /// (e.g. [SecReaderExceptionType.tokenFailed],
+  /// [SecReaderExceptionType.incompatibleFirmware]).
   final Future<void> Function(
     SecReaderException exception,
   ) onVerificationFailed;
@@ -160,6 +169,17 @@ class SecWidget extends StatelessWidget {
   }
 }
 
+/// Maps exceptions thrown during the SEC workflow into [LdException]s
+/// for display by Liquid's error UI.
+///
+/// Handles three categories of exceptions:
+/// - [SecReaderException]: Mapped to localized messages based on
+///   [SecReaderExceptionType]. The original exception is preserved in
+///   [LdException.exception] so it can be extracted by [onVerificationFailed]
+///   callbacks.
+/// - [DeviceError]: Raw BLE device errors that propagated through [SECReader]
+///   without being wrapped. Presented as a generic retriable error.
+/// - All other exceptions: Delegated to the base [LdExceptionMapper].
 class _SecExceptionMapper extends LdExceptionMapper {
   _SecExceptionMapper({
     required this.secLocalizations,

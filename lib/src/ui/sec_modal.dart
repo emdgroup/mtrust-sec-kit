@@ -42,7 +42,12 @@ class SecModalBuilder extends StatelessWidget {
   /// Will be called if a verification was successful.
   final void Function(UrpSecSecureMeasurement measurement) onVerificationDone;
 
-  /// Will be called if a verification failed.
+  /// Called when the verification fails.
+  ///
+  /// Receives a [SecReaderException] describing the failure cause.
+  /// Use [SecReaderException.type] to distinguish between failure types
+  /// (e.g. [SecReaderExceptionType.tokenFailed],
+  /// [SecReaderExceptionType.measurementFailed]).
   final void Function(
     SecReaderException exception,
   ) onVerificationFailed;

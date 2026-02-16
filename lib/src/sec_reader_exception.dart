@@ -1,3 +1,6 @@
+import 'package:liquid_flutter/liquid_flutter.dart';
+import 'package:mtrust_sec_kit/mtrust_sec_kit.dart';
+
 /// Enumerates the types of exceptions that can be thrown by the SEC reader.
 enum SecReaderExceptionType {
   /// Firmware version installed on the device is incompatible
@@ -19,11 +22,14 @@ enum SecReaderExceptionType {
   unspecified,
 }
 
-/// Exception thrown to indicate errors related to the SEC reader.
+/// Exception thrown to indicate errors from the SEC reader.
 ///
-/// This exception extends the [Error] class and is designed
-/// to be used specifically for handling errors in the context of SEC
-/// reading.
+/// All errors thrown by [SECReader] methods use this type, with a
+/// [SecReaderExceptionType] to categorize the failure. Inside the widget UI,
+/// [_SecExceptionMapper] translates these into localized [LdException]s for
+/// display, preserving the original [SecReaderException] in
+/// [LdException.exception] so that [onVerificationFailed] callbacks can
+/// access the typed failure cause.
 class SecReaderException implements Exception {
   /// Creates a new instance of [SecReaderException].
   ///
@@ -36,17 +42,18 @@ class SecReaderException implements Exception {
     this.type = SecReaderExceptionType.unspecified,
   });
 
-  /// Factory constructor that converts any exception to a [SecReaderException].
+  /// Creates a [SecReaderException] from an arbitrary exception.
   ///
-  /// If the exception is already a [SecReaderException], it returns it as-is.
-  /// Otherwise, it creates a new [SecReaderException] with the exception's
-  /// string representation as the message and [SecReaderExceptionType.unspecified]
-  /// as the type.
+  /// If [exception] is already a [SecReaderException], it is returned as-is,
+  /// preserving its [type]. Otherwise, a new instance is created with
+  /// [SecReaderExceptionType.unspecified].
   ///
-  /// [exception] The exception to convert. Can be null.
-  /// [fallbackMessage] An optional fallback message to use when [exception]
-  /// is null. If both [exception] and [fallbackMessage] are null, a default
-  /// message will be used.
+  /// The [fallbackMessage] is preferred over [exception.toString()] when
+  /// creating a new instance. This is typically the localized message from
+  /// [LdException.message] produced by the exception mapper.
+  ///
+  /// Used by the widget layer to extract a [SecReaderException] from an
+  /// [LdException] for the [onVerificationFailed] callback.
   factory SecReaderException.from(
     dynamic exception, {
     String? fallbackMessage,

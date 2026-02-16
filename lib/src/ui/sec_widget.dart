@@ -55,8 +55,8 @@ class SecWidget extends StatelessWidget {
         connectionStrategy: strategy,
         storageAdapter: storageAdapter,
         connectedBuilder: (BuildContext context) {
-          return LdSubmit<UrpSecPrimeResponse?>(
-            config: LdSubmitConfig<UrpSecPrimeResponse?>(
+          return LdSubmit<UrpSecPrimeResponse>(
+            config: LdSubmitConfig<UrpSecPrimeResponse>(
               loadingText: locale.primingTitle,
               autoTrigger: true,
               action: () async {
@@ -70,7 +70,7 @@ class SecWidget extends StatelessWidget {
                 return reader.prime(payload);
               },
             ),
-            builder: LdSubmitCustomBuilder<UrpSecPrimeResponse?>(
+            builder: LdSubmitCustomBuilder<UrpSecPrimeResponse>(
               builder: (context, controller, stateType) {
                 if (stateType == LdSubmitStateType.error) {
                   final message =

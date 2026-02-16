@@ -326,7 +326,7 @@ class SECReader extends CmdWrapper {
   }
 
   /// Prepares (primes) a measurement for the given [payload].
-  Future<UrpSecPrimeResponse?> prime(String payload) async {
+  Future<UrpSecPrimeResponse> prime(String payload) async {
     final cmd = UrpSecDeviceCommand(
       command: UrpSecCommand.urpSecPrime,
       primeParameters: UrpSecPrimeParameters(payload: payload),
@@ -356,7 +356,7 @@ class SECReader extends CmdWrapper {
         await setToken(newToken);
         return prime(payload);
       }
-      return null;
+      rethrow;
     }
   }
 

@@ -161,15 +161,8 @@ class ScanningView extends StatelessWidget {
                   ],
                 );
               case (LdSubmitStateType.error):
-                var message =
+                final message = measurementController.state.error?.message ??
                     SecLocalizations.of(context).verificationFailedMessage;
-                final exception = measurementController.state.error?.exception;
-                if (exception is SecReaderException) {
-                  if (exception.type ==
-                      SecReaderExceptionType.incompatibleFirmware) {
-                    message = SecLocalizations.of(context).incompatibleFirmware;
-                  }
-                }
                 return LdAutoSpace(
                   key: const Key('failed-scanning-view'),
                   animate: true,
@@ -194,12 +187,13 @@ class ScanningView extends StatelessWidget {
                       borderRadius: LdTheme.of(context).radius(LdSize.l),
                       size: LdSize.l,
                       onPressed: () {
-                        final secException = SecReaderException.from(
-                          measurementController.state.error?.exception,
-                          fallbackMessage:
-                              measurementController.state.error?.message,
+                        return onVerificationFailed(
+                          SecReaderException.from(
+                            measurementController.state.error?.exception,
+                            fallbackMessage:
+                                measurementController.state.error?.message,
+                          ),
                         );
-                        return onVerificationFailed(secException);
                       },
                       loadingText: SecLocalizations.of(context).disconnecting,
                       context: context,

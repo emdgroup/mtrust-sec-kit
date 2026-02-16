@@ -73,13 +73,8 @@ class SecWidget extends StatelessWidget {
             builder: LdSubmitCustomBuilder<UrpSecPrimeResponse?>(
               builder: (context, controller, stateType) {
                 if (stateType == LdSubmitStateType.error) {
-                  var message =
-                      controller.state.error?.message ?? 'Unknown error';
-
-                  if (controller.state.error?.exception.runtimeType
-                      is ApiException) {
-                    message = locale.tokenFailed;
-                  }
+                  final message =
+                      controller.state.error?.message ?? locale.primeFailed;
                   return LdAutoSpace(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
@@ -108,11 +103,13 @@ class SecWidget extends StatelessWidget {
                       else
                         LdButtonWarning(
                           onPressed: () {
-                            final secException = SecReaderException.from(
-                              controller.state.error?.exception,
-                              fallbackMessage: controller.state.error?.message,
+                            return onVerificationFailed(
+                              SecReaderException.from(
+                                controller.state.error?.exception,
+                                fallbackMessage:
+                                    controller.state.error?.message,
+                              ),
                             );
-                            return onVerificationFailed(secException);
                           },
                           context: context,
                           child: Text(

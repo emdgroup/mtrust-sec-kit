@@ -50,9 +50,7 @@ class SecReaderException implements Exception {
     }
 
     return SecReaderException(
-      message: exception?.toString() ??
-          fallbackMessage ??
-          'Unspecified SEC reader error',
+      message: fallbackMessage ?? exception?.toString() ?? 'Unknown error',
     );
   }
 

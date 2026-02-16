@@ -64,4 +64,3 @@ class SecReaderException implements Exception {
   /// The default value is [SecReaderExceptionType.unspecified].
   final SecReaderExceptionType type;
 }
-

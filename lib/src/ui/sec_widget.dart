@@ -190,6 +190,13 @@ class _SecExceptionMapper extends LdExceptionMapper {
       );
     }
 
+    if (e is DeviceError) {
+      return LdException(
+        message: localizations.unknownError,
+        exception: e,
+      );
+    }
+
     return super.handle(e, stackTrace: stackTrace);
   }
 }

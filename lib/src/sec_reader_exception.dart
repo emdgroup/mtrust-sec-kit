@@ -65,8 +65,3 @@ class SecReaderException implements Exception {
   final SecReaderExceptionType type;
 }
 
-/// Exception thrown when a SEC reader is not found.
-class SecConnectionFailedException extends SecReaderException {
-  /// Creates a new instance of [SecConnectionFailedException].
-  SecConnectionFailedException() : super(message: 'SEC reader not found');
-}

@@ -263,7 +263,7 @@ class SECReader extends CmdWrapper {
     final res = await _addCommandToQueue(coreCommand: cmd);
 
     if (!res.hasPayload()) {
-      throw SecReaderException(message: 'Failed to get public key');
+      throw SecReaderException(message: 'Failed to get device id');
     }
     return UrpDeviceId.fromBuffer(res.payload);
   }

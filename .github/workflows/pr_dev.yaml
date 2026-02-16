@@ -70,3 +70,5 @@ jobs:
   api-guard:
     if: ${{ github.actor != 'dependabot[bot]' }}
     uses: emdgroup/mtrust-api-guard/.github/workflows/pr_workflow.yaml@main
+    with:
+      pre_release: true

@@ -7,3 +7,7 @@ analyzer:
     - "lib/src/**/*.g.dart"
     - "lib/src/**/*.freezed.dart"
     - "lib/src/ui/l10n/*.dart"
+
+api_guard:
+  exclude:
+    - "example/**"

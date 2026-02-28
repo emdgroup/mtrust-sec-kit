@@ -1,9 +1,8 @@
 import 'package:example/virtual_strategy.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:mtrust_sec_kit/mtrust_sec_kit.dart';
-
 import 'package:liquid_flutter/liquid_flutter.dart';
+import 'package:mtrust_sec_kit/mtrust_sec_kit.dart';
 import 'package:mtrust_urp_ble_strategy/mtrust_urp_ble_strategy.dart';
 
 void main() {
@@ -102,8 +101,8 @@ class _MainAppState extends State<MainApp> {
               onVerificationDone: (measurement) {
                 debugPrint("Verification done ${measurement.measurement}");
               },
-              onVerificationFailed: () {
-                debugPrint("Verification failed");
+              onVerificationFailed: (exception) {
+                debugPrint("Verification failed: $exception");
               },
               builder: (context, openModal) {
                 return LdButton(

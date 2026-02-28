@@ -9,15 +9,23 @@ enum SecReaderExceptionType {
   /// Failed to get or install new token
   tokenFailed,
 
+  /// Failed to connect to a reader
+  connectionFailed,
+
+  /// A command sent to the reader failed or returned an unexpected response
+  commandFailed,
+
   /// Unspecified error
   unspecified,
 }
 
-/// Exception thrown to indicate errors related to the SEC reader.
+/// Exception thrown to indicate errors from the SEC reader.
 ///
-/// This exception extends the [Error] class and is designed
-/// to be used specifically for handling errors in the context of SEC
-/// reading.
+/// All errors thrown by `SECReader` methods use this type, with a
+/// [SecReaderExceptionType] to categorize the failure. Inside the widget UI,
+/// the exception mapper translates these into localized exceptions for
+/// display, preserving the original [SecReaderException] so that
+/// `onVerificationFailed` callbacks can access the typed failure cause.
 class SecReaderException implements Exception {
   /// Creates a new instance of [SecReaderException].
   ///
@@ -30,6 +38,31 @@ class SecReaderException implements Exception {
     this.type = SecReaderExceptionType.unspecified,
   });
 
+  /// Creates a [SecReaderException] from an arbitrary exception.
+  ///
+  /// If [exception] is already a [SecReaderException], it is returned as-is,
+  /// preserving its [type]. Otherwise, a new instance is created with
+  /// [SecReaderExceptionType.unspecified].
+  ///
+  /// The [fallbackMessage] is preferred over `exception.toString()` when
+  /// creating a new instance. This is typically the localized error message
+  /// produced by the exception mapper.
+  ///
+  /// Used by the widget layer to extract a [SecReaderException] from a
+  /// mapped exception for the `onVerificationFailed` callback.
+  factory SecReaderException.from(
+    dynamic exception, {
+    String? fallbackMessage,
+  }) {
+    if (exception is SecReaderException) {
+      return exception;
+    }
+
+    return SecReaderException(
+      message: fallbackMessage ?? exception?.toString() ?? 'Unknown error',
+    );
+  }
+
   /// A message providing additional details about the SEC reader error.
   ///
   /// If not specified during the exception creation, a default message
@@ -39,10 +72,4 @@ class SecReaderException implements Exception {
   /// The type of exception that was thrown.
   /// The default value is [SecReaderExceptionType.unspecified].
   final SecReaderExceptionType type;
-}
-
-/// Exception thrown when a SEC reader is not found.
-class SecConnectionFailedException extends SecReaderException {
-  /// Creates a new instance of [SecConnectionFailedException].
-  SecConnectionFailedException() : super(message: 'SEC reader not found');
 }

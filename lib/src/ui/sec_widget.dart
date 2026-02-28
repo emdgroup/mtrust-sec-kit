@@ -34,8 +34,20 @@ class SecWidget extends StatelessWidget {
     UrpSecSecureMeasurement measurement,
   ) onVerificationDone;
 
-  /// Will be called if a verification failed.
-  final Future<void> Function() onVerificationFailed;
+  /// Called when verification fails.
+  ///
+  /// The exception is extracted from the mapped exception produced by
+  /// the exception mapper. If the original exception was a
+  /// [SecReaderException], it is returned as-is (preserving its [SecReaderExceptionType]).
+  /// Otherwise, a new [SecReaderException] is created with the mapper's
+  /// localized message and [SecReaderExceptionType.unspecified].
+  ///
+  /// Use [SecReaderException.type] to distinguish failure causes
+  /// (e.g. [SecReaderExceptionType.tokenFailed],
+  /// [SecReaderExceptionType.incompatibleFirmware]).
+  final Future<void> Function(
+    SecReaderException exception,
+  ) onVerificationFailed;
 
   /// Amount of token to be requested on token refresh.
   final int? tokenAmount;
@@ -52,8 +64,8 @@ class SecWidget extends StatelessWidget {
         connectionStrategy: strategy,
         storageAdapter: storageAdapter,
         connectedBuilder: (BuildContext context) {
-          return LdSubmit<UrpSecPrimeResponse?>(
-            config: LdSubmitConfig<UrpSecPrimeResponse?>(
+          return LdSubmit<UrpSecPrimeResponse>(
+            config: LdSubmitConfig<UrpSecPrimeResponse>(
               loadingText: locale.primingTitle,
               autoTrigger: true,
               action: () async {
@@ -67,16 +79,11 @@ class SecWidget extends StatelessWidget {
                 return reader.prime(payload);
               },
             ),
-            builder: LdSubmitCustomBuilder<UrpSecPrimeResponse?>(
+            builder: LdSubmitCustomBuilder<UrpSecPrimeResponse>(
               builder: (context, controller, stateType) {
                 if (stateType == LdSubmitStateType.error) {
-                  var message =
-                      controller.state.error?.message ?? 'Unknown error';
-
-                  if (controller.state.error?.exception.runtimeType
-                      is ApiException) {
-                    message = locale.tokenFailed;
-                  }
+                  final message =
+                      controller.state.error?.message ?? locale.primeFailed;
                   return LdAutoSpace(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
@@ -104,7 +111,15 @@ class SecWidget extends StatelessWidget {
                         )
                       else
                         LdButtonWarning(
-                          onPressed: onVerificationFailed,
+                          onPressed: () {
+                            return onVerificationFailed(
+                              SecReaderException.from(
+                                controller.state.error?.exception,
+                                fallbackMessage:
+                                    controller.state.error?.message,
+                              ),
+                            );
+                          },
                           context: context,
                           child: Text(
                             locale.done,
@@ -138,9 +153,9 @@ class SecWidget extends StatelessWidget {
                     controller.reset();
                     await onVerificationDone(measurement);
                   },
-                  onVerificationFailed: () async {
+                  onVerificationFailed: (e) async {
                     controller.reset();
-                    await onVerificationFailed();
+                    await onVerificationFailed(e);
                   },
                   remainingScans: controller.state.result?.gsa,
                 );
@@ -154,6 +169,16 @@ class SecWidget extends StatelessWidget {
   }
 }
 
+/// Maps exceptions thrown during the SEC workflow into localized
+/// [LdException]s for display by Liquid's error UI.
+///
+/// Handles three categories of exceptions:
+/// - [SecReaderException]: Mapped to localized messages based on
+///   [SecReaderExceptionType]. The original exception is preserved so it
+///   can be extracted by `onVerificationFailed` callbacks.
+/// - [DeviceError]: Raw BLE device errors that propagated through [SECReader]
+///   without being wrapped. Presented as a generic retriable error.
+/// - All other exceptions: Delegated to the base [LdExceptionMapper].
 class _SecExceptionMapper extends LdExceptionMapper {
   _SecExceptionMapper({
     required this.secLocalizations,
@@ -168,6 +193,8 @@ class _SecExceptionMapper extends LdExceptionMapper {
       final retriable = {
         SecReaderExceptionType.tokenFailed,
         SecReaderExceptionType.measurementFailed,
+        SecReaderExceptionType.connectionFailed,
+        SecReaderExceptionType.commandFailed,
         SecReaderExceptionType.unspecified,
       };
       return LdException(
@@ -177,9 +204,19 @@ class _SecExceptionMapper extends LdExceptionMapper {
             secLocalizations.incompatibleFirmware,
           SecReaderExceptionType.measurementFailed =>
             secLocalizations.verificationFailedMessage,
+          SecReaderExceptionType.connectionFailed => localizations.unknownError,
+          SecReaderExceptionType.commandFailed => localizations.unknownError,
           SecReaderExceptionType.unspecified => localizations.unknownError,
         },
         canRetry: retriable.contains(e.type),
+        exception: e,
+      );
+    }
+
+    if (e is DeviceError) {
+      return LdException(
+        message: localizations.unknownError,
+        exception: e,
       );
     }
 

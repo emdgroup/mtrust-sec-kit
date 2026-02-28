@@ -1,8 +1,6 @@
 import 'dart:async';
 
-import 'package:mtrust_urp_core/mtrust_urp_core.dart';
-import 'package:mtrust_urp_types/sec.pb.dart';
-import 'package:mtrust_urp_ui/src/storage_adapter.dart';
+import 'package:mtrust_sec_kit/mtrust_sec_kit.dart';
 import 'package:mtrust_urp_virtual_strategy/mtrust_urp_virtual_strategy.dart';
 
 final reader1 = FoundDevice(
@@ -24,7 +22,11 @@ final reader3 = FoundDevice(
 );
 
 class CompleterStrategy {
-  CompleterStrategy({bool withReaders = false, this.useDelays = false}) {
+  CompleterStrategy({
+    bool withReaders = false,
+    this.useDelays = false,
+    this.measurementResponse,
+  }) {
     strategy = UrpVirtualStrategy((UrpRequest request) async {
       final payload = UrpSecCommandWrapper.fromBuffer(request.payload);
       switch (payload.deviceCommand.command) {
@@ -59,20 +61,21 @@ class CompleterStrategy {
             await startMeasurementCompleter.future;
           }
 
-          return UrpResponse(
-            payload: UrpSecSecureMeasurement(
-              signature: [0, 0, 0, 0],
-              measurement: UrpSecMeasurement(
-                result: [
-                  UrpSecMeasurementResult(
-                    modelId: '123',
-                    scoreDistance: 0.5,
-                    orthogonalDistance: 0.6,
+          return measurementResponse ??
+              UrpResponse(
+                payload: UrpSecSecureMeasurement(
+                  signature: [0, 0, 0, 0],
+                  measurement: UrpSecMeasurement(
+                    result: [
+                      UrpSecMeasurementResult(
+                        modelId: '123',
+                        scoreDistance: 0.5,
+                        orthogonalDistance: 0.6,
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            ).writeToBuffer(),
-          );
+                ).writeToBuffer(),
+              );
         // ignore: no_default_cases
         default:
           return UrpResponse();
@@ -98,6 +101,7 @@ class CompleterStrategy {
   Completer<void> primeCompleter = Completer<void>();
   Completer<void> startMeasurementCompleter = Completer<void>();
   late UrpVirtualStrategy strategy;
+  UrpResponse? measurementResponse;
 }
 
 class MockStorageAdapter extends StorageAdapter {

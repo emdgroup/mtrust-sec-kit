@@ -42,8 +42,15 @@ class SecModalBuilder extends StatelessWidget {
   /// Will be called if a verification was successful.
   final void Function(UrpSecSecureMeasurement measurement) onVerificationDone;
 
-  /// Will be called if a verification failed.
-  final void Function() onVerificationFailed;
+  /// Called when the verification fails.
+  ///
+  /// Receives a [SecReaderException] describing the failure cause.
+  /// Use [SecReaderException.type] to distinguish between failure types
+  /// (e.g. [SecReaderExceptionType.tokenFailed],
+  /// [SecReaderExceptionType.measurementFailed]).
+  final void Function(
+    SecReaderException exception,
+  ) onVerificationFailed;
 
   /// Called when the user dismisses the sheet.
   final void Function()? onDismiss;
@@ -89,7 +96,7 @@ class SecModalBuilder extends StatelessWidget {
         return builder(context, () async {
           final result = await openModal();
           if (result is SecResultFailed) {
-            onVerificationFailed();
+            onVerificationFailed(result.exception);
           } else if (result is SecResultSuccess) {
             onVerificationDone(result.measurement);
           } else {
@@ -125,7 +132,13 @@ class SecResultSuccess extends SecResult {
 class SecResultDismissed extends SecResult {}
 
 /// Returned in case of a failed SEC verification (e.g. a timeout)
-class SecResultFailed extends SecResult {}
+class SecResultFailed extends SecResult {
+  /// Creates a new instance of [SecResultFailed]
+  SecResultFailed(this.exception);
+
+  /// The exception that caused the failure.
+  final SecReaderException exception;
+}
 
 /// Build a modal using [SecWidget], pops the result of the SEC verification.
 /// The result is either [SecResultSuccess], [SecResultFailed]
@@ -178,8 +191,8 @@ LdModal secModal({
           onVerificationDone: (UrpSecSecureMeasurement measurement) async {
             Navigator.of(context).pop(SecResultSuccess(measurement));
           },
-          onVerificationFailed: () async {
-            Navigator.of(context).pop(SecResultFailed());
+          onVerificationFailed: (exception) async {
+            Navigator.of(context).pop(SecResultFailed(exception));
           },
           tokenAmount: tokenAmount,
         ),

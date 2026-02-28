@@ -61,7 +61,10 @@ class SECReader extends CmdWrapper {
     );
 
     if (!connceted) {
-      throw SecReaderException(message: 'Failed to connect to reader');
+      throw SecReaderException(
+        message: 'Failed to connect to reader',
+        type: SecReaderExceptionType.connectionFailed,
+      );
     }
 
     return SECReader(connectionStrategy: connectionStrategy);
@@ -91,6 +94,7 @@ class SECReader extends CmdWrapper {
     if (!connected) {
       throw SecReaderException(
         message: 'Failed to connect to found reader $reader',
+        type: SecReaderExceptionType.connectionFailed,
       );
     }
 
@@ -111,6 +115,11 @@ class SECReader extends CmdWrapper {
     );
   }
 
+  @override
+  Future<UrpResponse> addCoreCmdToQueue(UrpCoreCommand coreCommand) async {
+    return _addCommandToQueue(coreCommand: coreCommand);
+  }
+
   /// Pings the device.
   @override
   Future<void> ping() async {
@@ -129,7 +138,10 @@ class SECReader extends CmdWrapper {
     final res = await _addCommandToQueue(coreCommand: cmd);
 
     if (!res.hasPayload()) {
-      throw SecReaderException(message: 'Failed to get info');
+      throw SecReaderException(
+        message: 'Failed to get info',
+        type: SecReaderExceptionType.commandFailed,
+      );
     }
     return UrpDeviceInfo.fromBuffer(res.payload);
   }
@@ -143,7 +155,10 @@ class SECReader extends CmdWrapper {
     final res = await _addCommandToQueue(coreCommand: cmd);
 
     if (!res.hasPayload()) {
-      throw SecReaderException(message: 'Failed to get power state');
+      throw SecReaderException(
+        message: 'Failed to get power state',
+        type: SecReaderExceptionType.commandFailed,
+      );
     }
     return UrpPowerState.fromBuffer(res.payload);
   }
@@ -167,18 +182,12 @@ class SECReader extends CmdWrapper {
     final res = await _addCommandToQueue(coreCommand: cmd);
 
     if (!res.hasPayload()) {
-      throw SecReaderException(message: 'Failed to get name');
+      throw SecReaderException(
+        message: 'Failed to get name',
+        type: SecReaderExceptionType.commandFailed,
+      );
     }
     return UrpDeviceName.fromBuffer(res.payload);
-  }
-
-  /// Pair the device.
-  @override
-  Future<void> pair() async {
-    final cmd = UrpCoreCommand(
-      command: UrpCommand.urpPair,
-    );
-    await _addCommandToQueue(coreCommand: cmd);
   }
 
   /// Unpair the device.
@@ -253,7 +262,10 @@ class SECReader extends CmdWrapper {
     final res = await _addCommandToQueue(coreCommand: cmd);
 
     if (!res.hasPayload()) {
-      throw SecReaderException(message: 'Failed to get public key');
+      throw SecReaderException(
+        message: 'Failed to get public key',
+        type: SecReaderExceptionType.commandFailed,
+      );
     }
     return UrpPublicKey.fromBuffer(res.payload);
   }
@@ -267,7 +279,10 @@ class SECReader extends CmdWrapper {
     final res = await _addCommandToQueue(coreCommand: cmd);
 
     if (!res.hasPayload()) {
-      throw SecReaderException(message: 'Failed to get public key');
+      throw SecReaderException(
+        message: 'Failed to get device id',
+        type: SecReaderExceptionType.commandFailed,
+      );
     }
     return UrpDeviceId.fromBuffer(res.payload);
   }
@@ -291,7 +306,10 @@ class SECReader extends CmdWrapper {
     final res = await _addCommandToQueue(coreCommand: cmd);
 
     if (!res.hasPayload()) {
-      throw SecReaderException(message: 'Failed to connect to AP');
+      throw SecReaderException(
+        message: 'Failed to connect to AP',
+        type: SecReaderExceptionType.commandFailed,
+      );
     }
     return UrpWifiState.fromBuffer(res.payload);
   }
@@ -315,7 +333,10 @@ class SECReader extends CmdWrapper {
     final res = await _addCommandToQueue(coreCommand: cmd);
 
     if (!res.hasPayload()) {
-      throw SecReaderException(message: 'Failed to start AP');
+      throw SecReaderException(
+        message: 'Failed to start AP',
+        type: SecReaderExceptionType.commandFailed,
+      );
     }
     return UrpWifiState.fromBuffer(res.payload);
   }
@@ -330,7 +351,7 @@ class SECReader extends CmdWrapper {
   }
 
   /// Prepares (primes) a measurement for the given [payload].
-  Future<UrpSecPrimeResponse?> prime(String payload) async {
+  Future<UrpSecPrimeResponse> prime(String payload) async {
     final cmd = UrpSecDeviceCommand(
       command: UrpSecCommand.urpSecPrime,
       primeParameters: UrpSecPrimeParameters(payload: payload),
@@ -340,7 +361,7 @@ class SECReader extends CmdWrapper {
       return UrpSecPrimeResponse.fromBuffer(res.payload);
     } catch (e) {
       if (e is DeviceError) {
-        if (e.errorCode != 4) {
+        if (e.errorCode != UrpErrorCode.urpLeaseError) {
           rethrow;
         }
         final publicKey = await getPublicKey();
@@ -360,7 +381,7 @@ class SECReader extends CmdWrapper {
         await setToken(newToken);
         return prime(payload);
       }
-      return null;
+      rethrow;
     }
   }
 
@@ -461,7 +482,10 @@ class SECReader extends CmdWrapper {
     final res = await _addCommandToQueue(deviceCommand: cmd);
 
     if (!res.hasPayload()) {
-      throw Exception('Failed to get model info');
+      throw SecReaderException(
+        message: 'Failed to get model info',
+        type: SecReaderExceptionType.commandFailed,
+      );
     }
     final urpSecModels = UrpSecModels.fromBuffer(res.payload);
     return urpSecModels.models;

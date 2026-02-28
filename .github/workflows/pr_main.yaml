@@ -66,3 +66,6 @@ jobs:
         uses: emdgroup/mtrust-urp/.github/shared_actions/check-dart-licenses@main
         with:
           directory: .
+
+  api-guard:
+    uses: emdgroup/mtrust-api-guard/.github/workflows/pr_workflow.yaml@main

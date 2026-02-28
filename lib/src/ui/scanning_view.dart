@@ -30,8 +30,15 @@ class ScanningView extends StatelessWidget {
     UrpSecSecureMeasurement measurement,
   ) onVerificationDone;
 
-  /// Function to call when the verification fails.
-  final Future<void> Function() onVerificationFailed;
+  /// Called when the verification fails.
+  ///
+  /// The exception is extracted from the mapped exception produced by
+  /// the exception mapper. If the original exception was already a
+  /// [SecReaderException], it is passed through directly. Otherwise, a new
+  /// [SecReaderException] is created using the mapper's localized message.
+  final Future<void> Function(
+    SecReaderException exception,
+  ) onVerificationFailed;
 
   @override
   Widget build(BuildContext context) {
@@ -159,17 +166,8 @@ class ScanningView extends StatelessWidget {
                   ],
                 );
               case (LdSubmitStateType.error):
-                var message =
+                final message = measurementController.state.error?.message ??
                     SecLocalizations.of(context).verificationFailedMessage;
-                if (measurementController.state.error?.exception.runtimeType ==
-                    SecReaderExceptionType) {
-                  final error = measurementController.state.error?.exception
-                      as SecReaderException;
-                  if (error.type ==
-                      SecReaderExceptionType.incompatibleFirmware) {
-                    message = SecLocalizations.of(context).incompatibleFirmware;
-                  }
-                }
                 return LdAutoSpace(
                   key: const Key('failed-scanning-view'),
                   animate: true,
@@ -193,7 +191,15 @@ class ScanningView extends StatelessWidget {
                       width: double.infinity,
                       borderRadius: LdTheme.of(context).radius(LdSize.l),
                       size: LdSize.l,
-                      onPressed: onVerificationFailed,
+                      onPressed: () {
+                        return onVerificationFailed(
+                          SecReaderException.from(
+                            measurementController.state.error?.exception,
+                            fallbackMessage:
+                                measurementController.state.error?.message,
+                          ),
+                        );
+                      },
                       loadingText: SecLocalizations.of(context).disconnecting,
                       context: context,
                       child: Text(

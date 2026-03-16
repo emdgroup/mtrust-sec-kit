@@ -1,3 +1,80 @@
+## 3.0.0-4
+Released on: 3/16/2026, changelog automatically generated.
+
+
+### Bug Fixes
+
+- rethrow instead of silently returning null in prime() ([4241737](commit/4241737))
+- throw SecReaderException instead of raw Exception in getModelInfo() ([685378a](commit/685378a))
+- correct copy-paste error message in getDeviceId() ([29f740d](commit/29f740d))
+- properly add exception details to LdExceptionMapper for error handling ([33ea85b](commit/33ea85b))
+### Features
+
+- enrich verification failure callback with exception details ([ea8d7fa](commit/ea8d7fa))
+- Add exception to onVerificationFailed callback, improve error handling, add API Guard to CI ([422d320](commit/422d320))
+
+### API Changes
+
+#### 💣 Breaking changes
+
+**`class` CmdWrapper** ([package:mtrust_urp_core/src/command_wrapper.dart](https://github.com/emdgroup/mtrust-sec-kit/compare/v3.0.0-3..v3.0.0-4#diff-7b1735aa9bc600d87769d9fec5da68dfbf9e70528a4d0aab28fa06d01f97062f))
+- ❌ Method removed: `pair`
+
+**`class` DeviceError** ([package:mtrust_urp_core/src/exceptions.dart](https://github.com/emdgroup/mtrust-sec-kit/compare/v3.0.0-3..v3.0.0-4#diff-6cbf5223db9c1a2e090610fb6b22e40ade6c975b0cf06c241c3c9ccd1f2f6665))
+- 🔄 Param type changed in default constructor: `errorCode` (`int` → `UrpErrorCode`)
+- 🔄 Property type changed: `errorCode`
+
+**`class` SECReader** ([lib/src/sec_reader.dart](https://github.com/emdgroup/mtrust-sec-kit/compare/v3.0.0-3..v3.0.0-4#diff-67ceb7d89da651b6536cb0d5b1c155e28a519252c85af02fe960fe85cc5c7bb2))
+- ❌ Method removed: `pair`
+- 🔄 Method type changed: `prime` (`Future<UrpSecPrimeResponse?>` → `Future<UrpSecPrimeResponse>`)
+
+**`class` SecConnectionFailedException** ([lib/src/sec_reader_exception.dart](https://github.com/emdgroup/mtrust-sec-kit/compare/v3.0.0-3..v3.0.0-4#diff-dd99aadeb7c0e7dd8d9b3e853b65f13fc48f88ff583f0ab8d7513d1a7a7e71f3))
+- ❌ Class removed: `SecConnectionFailedException`
+
+**`class` SecModalBuilder** ([lib/src/ui/sec_modal.dart](https://github.com/emdgroup/mtrust-sec-kit/compare/v3.0.0-3..v3.0.0-4#diff-a3f90834e96f20c6e781d4aa966775c2ade88e8317af0950f807ac3a6404ff31))
+- 🔄 Param type changed in default constructor: `onVerificationFailed` (`void Function()` → `void Function(SecReaderException)`)
+- 🔄 Property type changed: `onVerificationFailed`
+
+**`class` SecResultFailed** ([lib/src/ui/sec_modal.dart](https://github.com/emdgroup/mtrust-sec-kit/compare/v3.0.0-3..v3.0.0-4#diff-a3f90834e96f20c6e781d4aa966775c2ade88e8317af0950f807ac3a6404ff31))
+- ❇️ Param added in default constructor: `exception` (positional, required)
+
+**`class` SecWidget** ([lib/src/ui/sec_widget.dart](https://github.com/emdgroup/mtrust-sec-kit/compare/v3.0.0-3..v3.0.0-4#diff-c1cc8b6749cd6ce41cf838e2622be26d0f963f7169b53983c57f2ec6cd22fac2))
+- 🔄 Param type changed in default constructor: `onVerificationFailed` (`Future<void> Function()` → `Future<void> Function(SecReaderException)`)
+- 🔄 Property type changed: `onVerificationFailed`
+
+#### ✨ Minor changes
+
+**`class` CmdWrapper** ([package:mtrust_urp_core/src/command_wrapper.dart](https://github.com/emdgroup/mtrust-sec-kit/compare/v3.0.0-3..v3.0.0-4#diff-7b1735aa9bc600d87769d9fec5da68dfbf9e70528a4d0aab28fa06d01f97062f))
+- ❌ Modifier `abstract` removed from methods: `ping`, `info`, `getPower`, `setName`, `getName`, `unpair`, `startAP`, `stopAP`, `connectAP`, `disconnectAP`, `startDFU`, `stopDFU`, `sleep`, `off`, `reboot`, `stayAwake`, `getPublicKey`, `getDeviceId`, `identify`
+- ❇️ Methods added: `addCoreCmdToQueue`, `getVersion`
+
+**`class` ConnectionStrategy** ([package:mtrust_urp_core/src/connection_strategy.dart](https://github.com/emdgroup/mtrust-sec-kit/compare/v3.0.0-3..v3.0.0-4#diff-89390ebaa82697a717dc3a7fc72f2336f9ad80fd0abb429444850482b56af5f7))
+- ❇️ Property added: `onRequestCallback`
+
+**`class` SECReader** ([lib/src/sec_reader.dart](https://github.com/emdgroup/mtrust-sec-kit/compare/v3.0.0-3..v3.0.0-4#diff-67ceb7d89da651b6536cb0d5b1c155e28a519252c85af02fe960fe85cc5c7bb2))
+- ❇️ Methods added: `addCoreCmdToQueue`, `getVersion`
+
+**`class` SecReaderException** ([lib/src/sec_reader_exception.dart](https://github.com/emdgroup/mtrust-sec-kit/compare/v3.0.0-3..v3.0.0-4#diff-dd99aadeb7c0e7dd8d9b3e853b65f13fc48f88ff583f0ab8d7513d1a7a7e71f3))
+- ❇️ Constructor added: `from`
+
+**`enum` SecReaderExceptionType** ([lib/src/sec_reader_exception.dart](https://github.com/emdgroup/mtrust-sec-kit/compare/v3.0.0-3..v3.0.0-4#diff-dd99aadeb7c0e7dd8d9b3e853b65f13fc48f88ff583f0ab8d7513d1a7a7e71f3))
+- ❇️ Properties added: `connectionFailed`, `commandFailed`
+
+**`class` SecResultFailed** ([lib/src/ui/sec_modal.dart](https://github.com/emdgroup/mtrust-sec-kit/compare/v3.0.0-3..v3.0.0-4#diff-a3f90834e96f20c6e781d4aa966775c2ade88e8317af0950f807ac3a6404ff31))
+- ❇️ Property added: `exception`
+
+#### 👀 Patch changes
+
+**`meta` dependency `mtrust_urp_core`** ([pubspec.yaml](https://github.com/emdgroup/mtrust-sec-kit/compare/v3.0.0-3..v3.0.0-4#diff-8b7e9df87668ffa6a04b32e1769a33434999e54ae081c52e5d943c541d4c0d25))
+- 📦 Dependency version changed: from `9.1.0-12` to `^9.1.0-13`
+
+**`meta` dependency `mtrust_urp_types`** ([pubspec.yaml](https://github.com/emdgroup/mtrust-sec-kit/compare/v3.0.0-3..v3.0.0-4#diff-8b7e9df87668ffa6a04b32e1769a33434999e54ae081c52e5d943c541d4c0d25))
+- 📦 Dependency version changed: from `^6.2.0` to `^6.2.1`
+
+**`meta` dependency `mtrust_urp_ui`** ([pubspec.yaml](https://github.com/emdgroup/mtrust-sec-kit/compare/v3.0.0-3..v3.0.0-4#diff-8b7e9df87668ffa6a04b32e1769a33434999e54ae081c52e5d943c541d4c0d25))
+- 📦 Dependency version changed: from `9.1.0-12` to `^9.1.0-13`
+
+
 # Changelog
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.

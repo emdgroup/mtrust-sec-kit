@@ -39,7 +39,8 @@ jobs:
     with:
       git_push_branch: main
       git_push: true
-    secrets: inherit
+    secrets:
+      token: ${{ secrets.ELEVATED_TOKEN }}
 
   rebase_dev:
     name: Write changes to dev branch

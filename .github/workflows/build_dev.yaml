@@ -40,4 +40,5 @@ jobs:
       git_push_branch: dev
       git_push: true
       pre_release: true
-    secrets: inherit
+    secrets:
+      token: ${{ secrets.ELEVATED_TOKEN }}

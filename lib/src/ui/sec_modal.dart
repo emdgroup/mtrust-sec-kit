@@ -23,6 +23,8 @@ class SecModalBuilder extends StatelessWidget {
     this.disconnectOnClose = true,
     this.turnOffOnClose = true,
     this.canDismiss = true,
+    this.storageAdapter,
+    this.readerConnectorMode = ReaderConnectorMode.preferLastConnected,
     this.tokenAmount,
     super.key,
   });
@@ -32,6 +34,13 @@ class SecModalBuilder extends StatelessWidget {
 
   /// Whether the reader should be turned off when the sheet is closed.
   final bool turnOffOnClose;
+
+  /// The StorageAdapter to use for persisting the last connected and paired
+  /// devices.
+  final StorageAdapter? storageAdapter;
+
+  /// The mode to use when connecting to a device.
+  final ReaderConnectorMode readerConnectorMode;
 
   /// Strategy to use for the connection.
   final ConnectionStrategy strategy;
@@ -113,6 +122,8 @@ class SecModalBuilder extends StatelessWidget {
         useSafeArea: useSafeArea,
         strategy: strategy,
         payload: payload,
+        storageAdapter: storageAdapter,
+        readerConnectorMode: readerConnectorMode,
         tokenAmount: tokenAmount,
       ),
     );
@@ -166,6 +177,14 @@ LdModal secModal({
   /// Whether to use safe area inside the modal
   required bool useSafeArea,
 
+  /// The StorageAdapter to use for persisting the last connected and paired
+  /// devices.
+  StorageAdapter? storageAdapter,
+
+  /// The mode to use when connecting to a device.
+  ReaderConnectorMode readerConnectorMode =
+      ReaderConnectorMode.preferLastConnected,
+
   /// Amount of token to be requested on token refresh
   int? tokenAmount,
 }) {
@@ -194,6 +213,8 @@ LdModal secModal({
           onVerificationFailed: (exception) async {
             Navigator.of(context).pop(SecResultFailed(exception));
           },
+          storageAdapter: storageAdapter,
+          readerConnectorMode: readerConnectorMode,
           tokenAmount: tokenAmount,
         ),
       ),

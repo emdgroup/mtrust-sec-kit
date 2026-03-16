@@ -1,6 +1,31 @@
 ## 3.0.0-5
 Released on: 3/16/2026, changelog automatically generated.
 
+
+### Features
+
+- Expose device connector params ([614fd05](commit/614fd05))
+- expose device connector options to SecModalBuilder and SecWidget ([3fcab07](commit/3fcab07))
+
+### API Changes
+
+#### ✨ Minor changes
+
+**`class` SecModalBuilder** ([lib/src/ui/sec_modal.dart](https://github.com/emdgroup/mtrust-sec-kit/compare/v3.0.0-4..v3.0.0-5#diff-a3f90834e96f20c6e781d4aa966775c2ade88e8317af0950f807ac3a6404ff31))
+- ❇️ Params added in default constructor: `storageAdapter` (named, optional), `readerConnectorMode` (named, optional, default: ReaderConnectorMode.preferLastConnected)
+- ❇️ Properties added: `storageAdapter`, `readerConnectorMode`
+
+**`class` SecWidget** ([lib/src/ui/sec_widget.dart](https://github.com/emdgroup/mtrust-sec-kit/compare/v3.0.0-4..v3.0.0-5#diff-c1cc8b6749cd6ce41cf838e2622be26d0f963f7169b53983c57f2ec6cd22fac2))
+- ❇️ Param added in default constructor: `readerConnectorMode` (named, optional, default: ReaderConnectorMode.preferLastConnected)
+- ❇️ Property added: `readerConnectorMode`
+
+**`function` secModal** ([lib/src/ui/sec_modal.dart](https://github.com/emdgroup/mtrust-sec-kit/compare/v3.0.0-4..v3.0.0-5#diff-a3f90834e96f20c6e781d4aa966775c2ade88e8317af0950f807ac3a6404ff31))
+- ❇️ Params added in function `secModal`: `storageAdapter` (named, optional), `readerConnectorMode` (named, optional, default: ReaderConnectorMode.preferLastConnected)
+
+
+## 3.0.0-5
+Released on: 3/16/2026, changelog automatically generated.
+
 # Changelog
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.

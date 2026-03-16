@@ -1,3 +1,6 @@
+## 3.0.0-5
+Released on: 3/16/2026, changelog automatically generated.
+
 # Changelog
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.

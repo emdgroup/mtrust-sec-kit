@@ -489,9 +489,4 @@ class SECReader extends CmdWrapper {
     final urpSecModels = UrpSecModels.fromBuffer(res.payload);
     return urpSecModels.models;
   }
-
-  @override
-  Future<UrpResponse> addCoreCmdToQueue(UrpCoreCommand command) {
-    return _addCommandToQueue(coreCommand: command);
-  }
 }

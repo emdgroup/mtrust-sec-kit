@@ -169,8 +169,7 @@ void main() {
           return () async {};
         },
         'Measure Complete': (tester, place) async {
-          final strategy =
-              CompleterStrategy(withReaders: true, useDelays: true);
+          final strategy = CompleterStrategy(withReaders: true, useDelays: true);
 
           final storageAdapter = MockStorageAdapter();
 
@@ -214,8 +213,7 @@ void main() {
     );
   });
 
-  testWidgets('SecWidget calls onVerificationFailed on error',
-      (WidgetTester tester) async {
+  testWidgets('SecWidget calls onVerificationFailed on error', (WidgetTester tester) async {
     urpUiDisableAnimations = true;
     ldDisableAnimations = true;
 
@@ -236,7 +234,6 @@ void main() {
     await tester.pumpWidget(
       LdThemeProvider(
         theme: theme,
-        autoSize: false,
         brightnessMode: LdThemeBrightnessMode.light,
         child: MaterialApp(
           localizationsDelegates: const [

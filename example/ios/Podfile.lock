@@ -2,9 +2,10 @@ PODS:
   - device_info_plus (0.0.1):
     - Flutter
   - Flutter (1.0.0)
-  - flutter_blue_plus (0.0.1):
+  - flutter_blue_plus_darwin (0.0.2):
     - Flutter
-  - haptic_feedback (0.4.2):
+    - FlutterMacOS
+  - haptic_feedback (0.5.1):
     - Flutter
   - sensors_plus (0.0.1):
     - Flutter
@@ -15,7 +16,7 @@ PODS:
 DEPENDENCIES:
   - device_info_plus (from `.symlinks/plugins/device_info_plus/ios`)
   - Flutter (from `Flutter`)
-  - flutter_blue_plus (from `.symlinks/plugins/flutter_blue_plus/ios`)
+  - flutter_blue_plus_darwin (from `.symlinks/plugins/flutter_blue_plus_darwin/darwin`)
   - haptic_feedback (from `.symlinks/plugins/haptic_feedback/ios`)
   - sensors_plus (from `.symlinks/plugins/sensors_plus/ios`)
   - shared_preferences_foundation (from `.symlinks/plugins/shared_preferences_foundation/darwin`)
@@ -25,8 +26,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/device_info_plus/ios"
   Flutter:
     :path: Flutter
-  flutter_blue_plus:
-    :path: ".symlinks/plugins/flutter_blue_plus/ios"
+  flutter_blue_plus_darwin:
+    :path: ".symlinks/plugins/flutter_blue_plus_darwin/darwin"
   haptic_feedback:
     :path: ".symlinks/plugins/haptic_feedback/ios"
   sensors_plus:
@@ -36,12 +37,12 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   device_info_plus: 21fcca2080fbcd348be798aa36c3e5ed849eefbe
-  Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
-  flutter_blue_plus: e5808fc4e5ebc58bb911635f8fdaf5e2b4da2754
-  haptic_feedback: 6d9ff6a70a5ca4ef470fbc5903c9c6c8d495d861
-  sensors_plus: 3c3bac724a2128c895623e03efd82cf0e94fd8e8
-  shared_preferences_foundation: 9e1978ff2562383bd5676f64ec4e9aa8fa06a6f7
+  Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
+  flutter_blue_plus_darwin: 20a08bfeaa0f7804d524858d3d8744bcc1b6dbc3
+  haptic_feedback: 1f22d7ad3abb43bb814aa42fdf548dc6d9e8245a
+  sensors_plus: 6a11ed0c2e1d0bd0b20b4029d3bad27d96e0c65b
+  shared_preferences_foundation: 7036424c3d8ec98dfe75ff1667cb0cd531ec82bb
 
-PODFILE CHECKSUM: 2626946c0f4c5a786ca56bc00721109d51be6950
+PODFILE CHECKSUM: f8ebcb4e2a0a6a1d39fce0f78fac4c85be401eb3
 
 COCOAPODS: 1.16.2

@@ -115,6 +115,7 @@ class SecModalBuilder extends StatelessWidget {
         });
       },
       modal: secModal(
+        context: context,
         canDismiss: canDismiss,
         insets: insets,
         topRadius: topRadius,
@@ -155,7 +156,7 @@ class SecResultFailed extends SecResult {
 /// The result is either [SecResultSuccess], [SecResultFailed]
 /// or [SecResultDismissed]. If the user dismisses the modal via the back
 /// button or the swip gesture, the result is null.
-LdModal secModal({
+LdModalRoute<SecResult> secModal({
   /// Whether the modal can be dissmissed by the user
   required bool canDismiss,
 
@@ -177,47 +178,58 @@ LdModal secModal({
   /// Whether to use safe area inside the modal
   required bool useSafeArea,
 
+  /// The context to use for the modal
+  required BuildContext context,
+
   /// The StorageAdapter to use for persisting the last connected and paired
   /// devices.
   StorageAdapter? storageAdapter,
 
   /// The mode to use when connecting to a device.
-  ReaderConnectorMode readerConnectorMode =
-      ReaderConnectorMode.preferLastConnected,
+  ReaderConnectorMode readerConnectorMode = ReaderConnectorMode.preferLastConnected,
 
   /// Amount of token to be requested on token refresh
   int? tokenAmount,
 }) {
-  return LdModal(
-    disableScrolling: true,
-    noHeader: true,
-    showDismissButton: canDismiss,
-    userCanDismiss: canDismiss,
-    topRadius: topRadius,
-    bottomRadius: bottomRadius,
-    useSafeArea: useSafeArea,
-    insets: insets,
-    contentPadding: EdgeInsets.zero,
+  return LdModalRoute(
+    barrierDismissible: canDismiss,
+    context: context,
     fixedDialogSize: const Size(400, 400),
-    size: LdSize.s,
-    modalContent: (context) => AspectRatio(
-      aspectRatio: 1,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 32),
-        child: SecWidget(
-          strategy: strategy,
-          payload: payload,
-          onVerificationDone: (UrpSecSecureMeasurement measurement) async {
-            Navigator.of(context).pop(SecResultSuccess(measurement));
-          },
-          onVerificationFailed: (exception) async {
-            Navigator.of(context).pop(SecResultFailed(exception));
-          },
-          storageAdapter: storageAdapter,
-          readerConnectorMode: readerConnectorMode,
-          tokenAmount: tokenAmount,
-        ),
+    sheetAspectRatio: 1,
+    pageBuilder: (BuildContext context) => LdScaffold(
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          Positioned.fill(
+            child: SecWidget(
+              strategy: strategy,
+              payload: payload,
+              onVerificationDone: (UrpSecSecureMeasurement measurement) async {
+                Navigator.of(context).pop(SecResultSuccess(measurement));
+              },
+              onVerificationFailed: (exception) async {
+                Navigator.of(context).pop(SecResultFailed(exception));
+              },
+              tokenAmount: tokenAmount,
+            ).padL(),
+          ),
+          if (canDismiss)
+            Align(
+              alignment: Alignment.topRight,
+              child: Column(
+                children: [
+                  LdButton.ghost(
+                    size: LdSize.l,
+                    onPressed: () {
+                      Navigator.of(context).pop(SecResultDismissed());
+                    },
+                    child: const Icon(Icons.close),
+                  ).padS(),
+                ],
+              ),
+            ),
+        ],
       ),
-    ).padL(),
+    ),
   );
 }

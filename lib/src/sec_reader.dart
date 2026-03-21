@@ -25,9 +25,8 @@ class SECReader extends CmdWrapper {
         origin = origin ??
             UrpDeviceIdentifier(
               deviceClass: UrpDeviceClass.urpHost,
-              deviceType: (kIsWeb || Platform.isAndroid || Platform.isIOS)
-                  ? UrpDeviceType.urpMobile
-                  : UrpDeviceType.urpDesktop,
+              deviceType:
+                  (kIsWeb || Platform.isAndroid || Platform.isIOS) ? UrpDeviceType.urpMobile : UrpDeviceType.urpDesktop,
             );
 
   /// The connectionStrategy used to connect the device.
@@ -489,5 +488,10 @@ class SECReader extends CmdWrapper {
     }
     final urpSecModels = UrpSecModels.fromBuffer(res.payload);
     return urpSecModels.models;
+  }
+
+  @override
+  Future<UrpResponse> addCoreCmdToQueue(UrpCoreCommand command) {
+    return _addCommandToQueue(coreCommand: command);
   }
 }

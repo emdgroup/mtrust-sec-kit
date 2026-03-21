@@ -1,5 +1,4 @@
-export 'package:liquid_flutter/liquid_flutter.dart'
-    show LdPortal, LdTheme, LdThemeProvider, LdThemedAppBuilder;
+export 'package:liquid_flutter/liquid_flutter.dart' show LdTheme, LdThemeProvider, LdThemedAppBuilder;
 export 'package:mtrust_urp_core/mtrust_urp_core.dart';
 export 'package:mtrust_urp_types/sec.pb.dart';
 export 'package:mtrust_urp_ui/mtrust_urp_ui.dart';

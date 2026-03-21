@@ -64,57 +64,57 @@ class _MainAppState extends State<MainApp> {
 
   @override
   Widget build(BuildContext context) {
-    return LdPortal(
-      child: Scaffold(
-        appBar: const LdAppBar(
+    return LdScaffold(
+      appBars: const [
+        LdAppBar(
           title: Text(
             "SEC Kit Example",
           ),
+        )
+      ],
+      body: LdScaffoldBody(children: [
+        LdToggle(
+            label: "Use virtual reader",
+            checked: _useVirtual,
+            onChanged: (value) {
+              setState(() {
+                _useVirtual = value;
+              });
+            }),
+        LdToggle(
+            label: "User can dismiss modal",
+            checked: _canDismiss,
+            onChanged: (value) {
+              setState(() {
+                _canDismiss = value;
+              });
+            }),
+        SecModalBuilder(
+          canDismiss: _canDismiss,
+          turnOffOnClose: false,
+          disconnectOnClose: true,
+          strategy: _useVirtual ? virtualStrategy : _bleStrategy,
+          payload: "<example payload>",
+          onDismiss: () {
+            debugPrint("Dismissed");
+          },
+          onVerificationDone: (measurement) {
+            debugPrint("Verification done ${measurement.measurement}");
+          },
+          onVerificationFailed: (failure) {
+            debugPrint("Verification failed: $failure");
+          },
+          builder: (context, openModal) {
+            return LdButton(
+              onPressed: () {
+                openModal();
+              },
+              size: LdSize.l,
+              child: const Text("Start verification"),
+            );
+          },
         ),
-        body: SafeArea(
-          child: LdAutoSpace(children: [
-            LdToggle(
-                label: "Use virtual reader",
-                checked: _useVirtual,
-                onChanged: (value) {
-                  setState(() {
-                    _useVirtual = value;
-                  });
-                }),
-            LdToggle(
-                label: "User can dismiss modal",
-                checked: _canDismiss,
-                onChanged: (value) {
-                  setState(() {
-                    _canDismiss = value;
-                  });
-                }),
-            SecModalBuilder(
-              canDismiss: _canDismiss,
-              turnOffOnClose: false,
-              disconnectOnClose: true,
-              strategy: _useVirtual ? virtualStrategy : _bleStrategy,
-              payload: "<example payload>",
-              onDismiss: () {
-                debugPrint("Dismissed");
-              },
-              onVerificationDone: (measurement) {
-                debugPrint("Verification done ${measurement.measurement}");
-              },
-              onVerificationFailed: (exception) {
-                debugPrint("Verification failed: $exception");
-              },
-              builder: (context, openModal) {
-                return LdButton(
-                  onPressed: openModal,
-                  size: LdSize.l,
-                  child: const Text("Start verification"),
-                );
-              },
-            ),
-          ]),
-        ).padL(),
-      ),
+      ]),
     );
   }
 }

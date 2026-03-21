@@ -69,11 +69,11 @@ class SecWidget extends StatelessWidget {
         storageAdapter: storageAdapter,
         mode: readerConnectorMode,
         connectedBuilder: (BuildContext context) {
-          return LdSubmit<UrpSecPrimeResponse>(
-            config: LdSubmitConfig<UrpSecPrimeResponse>(
+          return LdSubmit<UrpSecPrimeResponse?, void>(
+            config: LdSubmitConfig<UrpSecPrimeResponse?, void>(
               loadingText: locale.primingTitle,
               autoTrigger: true,
-              action: () async {
+              action: (_) async {
                 final reader = SECReader(
                   connectionStrategy: strategy,
                 );
@@ -84,15 +84,14 @@ class SecWidget extends StatelessWidget {
                 return reader.prime(payload);
               },
             ),
-            builder: LdSubmitCustomBuilder<UrpSecPrimeResponse>(
+            builder: LdSubmitCustomBuilder<UrpSecPrimeResponse?, void>(
               builder: (context, controller, stateType) {
                 if (stateType == LdSubmitStateType.error) {
-                  final message =
-                      controller.state.error?.message ?? locale.primeFailed;
+                  final error = controller.state.error;
                   return LdAutoSpace(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      LdTextHs(
+                      LdText.hs(
                         locale.primeFailed,
                         textAlign: TextAlign.center,
                       ),
@@ -102,30 +101,29 @@ class SecWidget extends StatelessWidget {
                           screenContent: Container(),
                         ),
                       ),
-                      LdTextP(
-                        message,
-                        textAlign: TextAlign.center,
-                      ),
+                      if (error != null)
+                        LdText.p(
+                          error.localize(context).message,
+                          textAlign: TextAlign.center,
+                        ),
                       if (controller.canRetry)
-                        LdButtonWarning(
+                        LdButton.warning(
                           onPressed: controller.trigger,
-                          context: context,
                           child: Text(
                             locale.retry,
                           ),
                         )
                       else
-                        LdButtonWarning(
-                          onPressed: () {
-                            return onVerificationFailed(
-                              SecReaderException.from(
-                                controller.state.error?.exception,
-                                fallbackMessage:
-                                    controller.state.error?.message,
-                              ),
-                            );
+                        LdButton.warning(
+                          onPressed: () async {
+                            final exception = controller.state.error?.exception;
+
+                            if (exception is SecReaderException) {
+                              await onVerificationFailed(exception);
+                            } else {
+                              await onVerificationFailed(SecReaderException());
+                            }
                           },
-                          context: context,
                           child: Text(
                             locale.done,
                           ),
@@ -141,7 +139,7 @@ class SecWidget extends StatelessWidget {
                       animate: true,
                       children: [
                         const LdLoader(),
-                        LdTextL(
+                        LdText.l(
                           locale.primingTitle,
                           textAlign: TextAlign.center,
                         ),
@@ -193,7 +191,7 @@ class _SecExceptionMapper extends LdExceptionMapper {
   final SecLocalizations secLocalizations;
 
   @override
-  LdException handle(dynamic e, {StackTrace? stackTrace}) {
+  LdLocalizedException handle(dynamic e, {StackTrace? stackTrace}) {
     if (e is SecReaderException) {
       final retriable = {
         SecReaderExceptionType.tokenFailed,
@@ -202,13 +200,11 @@ class _SecExceptionMapper extends LdExceptionMapper {
         SecReaderExceptionType.commandFailed,
         SecReaderExceptionType.unspecified,
       };
-      return LdException(
+      return LdLocalizedException(
         message: switch (e.type) {
           SecReaderExceptionType.tokenFailed => secLocalizations.tokenFailed,
-          SecReaderExceptionType.incompatibleFirmware =>
-            secLocalizations.incompatibleFirmware,
-          SecReaderExceptionType.measurementFailed =>
-            secLocalizations.verificationFailedMessage,
+          SecReaderExceptionType.incompatibleFirmware => secLocalizations.incompatibleFirmware,
+          SecReaderExceptionType.measurementFailed => secLocalizations.verificationFailedMessage,
           SecReaderExceptionType.connectionFailed => localizations.unknownError,
           SecReaderExceptionType.commandFailed => localizations.unknownError,
           SecReaderExceptionType.unspecified => localizations.unknownError,
@@ -219,7 +215,7 @@ class _SecExceptionMapper extends LdExceptionMapper {
     }
 
     if (e is DeviceError) {
-      return LdException(
+      return LdLocalizedException(
         message: localizations.unknownError,
         exception: e,
       );

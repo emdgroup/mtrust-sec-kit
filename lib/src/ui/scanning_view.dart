@@ -43,12 +43,12 @@ class ScanningView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: LdSubmit<UrpSecSecureMeasurement>(
-        config: LdSubmitConfig<UrpSecSecureMeasurement>(
+      child: LdSubmit<UrpSecSecureMeasurement, void>(
+        config: LdSubmitConfig<UrpSecSecureMeasurement, void>(
           loadingText: SecLocalizations.of(context).scanning,
           submitText: SecLocalizations.of(context).startScan,
           timeout: const Duration(seconds: 35),
-          action: () async {
+          action: (_) async {
             final reader = SECReader(
               connectionStrategy: strategy,
             );
@@ -57,7 +57,7 @@ class ScanningView extends StatelessWidget {
             return result;
           },
         ),
-        builder: LdSubmitCustomBuilder<UrpSecSecureMeasurement>(
+        builder: LdSubmitCustomBuilder<UrpSecSecureMeasurement, void>(
           builder: (context, measurementController, measurementStateType) {
             switch (measurementStateType) {
               case (LdSubmitStateType.loading):
@@ -66,11 +66,11 @@ class ScanningView extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   animate: true,
                   children: [
-                    LdTextHs(
+                    LdText.hs(
                       SecLocalizations.of(context).scanning,
                       textAlign: TextAlign.center,
                     ),
-                    LdTextP(
+                    LdText.p(
                       SecLocalizations.of(context).distanceHint,
                       textAlign: TextAlign.center,
                     ),
@@ -91,7 +91,7 @@ class ScanningView extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   animate: true,
                   children: [
-                    LdTextHs(
+                    LdText.hs(
                       SecLocalizations.of(context).successfullyVerified,
                       textAlign: TextAlign.center,
                     ),
@@ -107,7 +107,7 @@ class ScanningView extends StatelessWidget {
                       ),
                     ),
                     ldSpacerL,
-                    LdButtonVague(
+                    LdButton.vague(
                       width: double.infinity,
                       borderRadius: LdTheme.of(context).radius(LdSize.l),
                       size: LdSize.l,
@@ -129,11 +129,11 @@ class ScanningView extends StatelessWidget {
                   animate: true,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    LdTextHs(
+                    LdText.hs(
                       SecLocalizations.of(context).readyToScan,
                       textAlign: TextAlign.center,
                     ),
-                    LdTextP(
+                    LdText.p(
                       SecLocalizations.of(context).timeHint,
                       textAlign: TextAlign.center,
                     ),
@@ -148,13 +148,12 @@ class ScanningView extends StatelessWidget {
                       ),
                     ),
                     LdMute(
-                      child: LdTextPs(
-                        SecLocalizations.of(context)
-                            .readingsLeft(remainingScans ?? 0),
+                      child: LdText.p(
+                        SecLocalizations.of(context).readingsLeft(remainingScans ?? 0),
                         textAlign: TextAlign.center,
                       ),
                     ),
-                    LdButtonVague(
+                    LdButton.vague(
                       onPressed: measurementController.trigger,
                       borderRadius: LdTheme.of(context).radius(LdSize.l),
                       width: double.infinity,
@@ -166,18 +165,23 @@ class ScanningView extends StatelessWidget {
                   ],
                 );
               case (LdSubmitStateType.error):
-                final message = measurementController.state.error?.message ??
-                    SecLocalizations.of(context).verificationFailedMessage;
+                var message = SecLocalizations.of(context).verificationFailedMessage;
+                if (measurementController.state.error?.exception.runtimeType == SecReaderExceptionType) {
+                  final error = measurementController.state.error?.exception as SecReaderException;
+                  if (error.type == SecReaderExceptionType.incompatibleFirmware) {
+                    message = SecLocalizations.of(context).incompatibleFirmware;
+                  }
+                }
                 return LdAutoSpace(
                   key: const Key('failed-scanning-view'),
                   animate: true,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    LdTextHs(
+                    LdText.hs(
                       SecLocalizations.of(context).verificationFailed,
                       textAlign: TextAlign.center,
                     ),
-                    LdTextP(
+                    LdText.p(
                       message,
                       textAlign: TextAlign.center,
                     ),
@@ -187,7 +191,7 @@ class ScanningView extends StatelessWidget {
                         screenContent: Container(),
                       ),
                     ),
-                    LdButtonWarning(
+                    LdButton.warning(
                       width: double.infinity,
                       borderRadius: LdTheme.of(context).radius(LdSize.l),
                       size: LdSize.l,
@@ -195,13 +199,11 @@ class ScanningView extends StatelessWidget {
                         return onVerificationFailed(
                           SecReaderException.from(
                             measurementController.state.error?.exception,
-                            fallbackMessage:
-                                measurementController.state.error?.message,
+                            fallbackMessage: measurementController.state.error?.localize(context).message,
                           ),
                         );
                       },
                       loadingText: SecLocalizations.of(context).disconnecting,
-                      context: context,
                       child: Text(
                         SecLocalizations.of(context).done,
                       ),

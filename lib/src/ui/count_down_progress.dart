@@ -59,7 +59,7 @@ class _CountDownProgressState extends State<CountDownProgress> {
           ),
         ),
         LdMute(
-          child: LdTextL(
+          child: LdText.l(
             SecLocalizations.of(context).secondsLeft(
               _secondsLeft.toInt(),
             ),

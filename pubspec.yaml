@@ -3,6 +3,7 @@ description: A comprehensive SDK for interfacing with the MTrust SEC Readers.
   Including an example to get you started as fast as possible.
 version: 3.0.0-6
 repository: https://github.com/emdgroup/mtrust-sec-kit
+
 environment:
   sdk: ">=3.2.5 <4.0.0"
   flutter: ">=1.17.0"
@@ -12,18 +13,47 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   intl: ^0.20.2
-  liquid_flutter: ^22.0.4
-  mtrust_urp_core: ^9.1.0-13
-  mtrust_urp_types: ^6.2.1
-  mtrust_urp_ui: ^9.1.0-13
+  liquid_flutter: ^23.0.0-1
+  mtrust_urp_ui: 
+    git:
+      url: https://github.com/emdgroup/mtrust-urp.git
+      ref: feat_liquid_flutter_23
+      path: packages/mtrust_urp_ui
+  mtrust_urp_core:
+    git:
+      url: https://github.com/emdgroup/mtrust-urp.git
+      ref: feat_liquid_flutter_23
+      path: packages/mtrust_urp_core
+  mtrust_urp_ble_strategy:
+    git:
+      url: https://github.com/emdgroup/mtrust-urp.git
+      ref: feat_liquid_flutter_23
+      path: packages/mtrust_urp_ble_strategy
+  mtrust_urp_virtual_strategy:
+    git:
+      url: https://github.com/emdgroup/mtrust-urp.git
+      ref: feat_liquid_flutter_23
+      path: packages/mtrust_urp_virtual_strategy
 dev_dependencies:
   flutter_test:
     sdk: flutter
   golden_toolkit: ^0.15.0
-  mtrust_urp_virtual_strategy: ^9.1.0-12
   very_good_analysis: ^5.1.0
 flutter:
   uses-material-design: true
   generate: true
   assets:
     - assets/
+
+dependency_overrides:
+  liquid_flutter: ^23.0.0-1
+  mtrust_urp_virtual_strategy: 
+    git:
+      url: https://github.com/emdgroup/mtrust-urp.git
+      ref: feat_liquid_flutter_23
+      path: packages/mtrust_urp_virtual_strategy
+  mtrust_urp_core: 
+    git:
+      url: https://github.com/emdgroup/mtrust-urp.git
+      ref: feat_liquid_flutter_23
+      path: packages/mtrust_urp_core

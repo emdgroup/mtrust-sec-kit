@@ -14,8 +14,7 @@ class ScanningInstruction extends StatefulWidget {
   State<ScanningInstruction> createState() => _ScanningInstructionState();
 }
 
-class _ScanningInstructionState extends State<ScanningInstruction>
-    with SingleTickerProviderStateMixin {
+class _ScanningInstructionState extends State<ScanningInstruction> with SingleTickerProviderStateMixin {
   late final _controller = AnimationController(
     vsync: this,
     duration: const Duration(seconds: 2),
@@ -90,12 +89,12 @@ class _ScanningInstructionState extends State<ScanningInstruction>
                       Row(
                         children: [
                           Container(
-                            height: 50,
-                          ),
-                          Container(
                             height: 16,
                             width: 2,
                             color: color,
+                          ),
+                          Expanded(
+                            child: Container(height: 2, color: color),
                           ),
                           Container(
                             height: 16,
@@ -121,10 +120,10 @@ class _ScanningInstructionState extends State<ScanningInstruction>
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  theme.surface,
-                  theme.surface.withAlpha(0),
-                  theme.surface.withAlpha(0),
-                  theme.surface,
+                  theme.background,
+                  theme.background.withAlpha(0),
+                  theme.background.withAlpha(0),
+                  theme.background,
                 ],
                 stops: const [0, 0.1, 0.9, 1],
               ),

@@ -5,6 +5,7 @@ import 'package:liquid_flutter/liquid_flutter.dart';
 import 'package:mtrust_sec_kit/mtrust_sec_kit.dart';
 import 'package:mtrust_sec_kit/src/ui/count_down_progress.dart';
 import 'package:mtrust_sec_kit/src/ui/scanning_instruction.dart';
+import 'package:provider/provider.dart';
 
 /// [ScanningView] is used when the user is performing a measurement
 /// Responsible for starting the measurement , showing the progress indicator
@@ -57,8 +58,12 @@ class ScanningView extends StatelessWidget {
             return result;
           },
         ),
-        builder: LdSubmitCustomBuilder<UrpSecSecureMeasurement, void>(
-          builder: (context, measurementController, measurementStateType) {
+        child: Builder(
+          builder: (
+            context,
+          ) {
+            final measurementController = context.watch<LdSubmitController<UrpSecSecureMeasurement, void>>();
+            final measurementStateType = measurementController.state.type;
             switch (measurementStateType) {
               case (LdSubmitStateType.loading):
                 return LdAutoSpace(

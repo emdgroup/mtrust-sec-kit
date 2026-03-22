@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:liquid_flutter/liquid_flutter.dart';
 import 'package:mtrust_sec_kit/mtrust_sec_kit.dart';
 import 'package:mtrust_sec_kit/src/ui/scanning_view.dart';
+import 'package:provider/provider.dart';
 
 /// [SecWidget] is a widget that guides the user through the SEC
 /// workflow.
@@ -59,11 +60,8 @@ class SecWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final locale = SecLocalizations.of(context);
-    return LdExceptionMapperProvider(
-      exceptionMapper: _SecExceptionMapper(
-        secLocalizations: locale,
-        localizations: LiquidLocalizations.of(context),
-      ),
+    return LdExceptionLocalizer(
+      onException: mapSecException,
       child: DeviceConnector(
         connectionStrategy: strategy,
         storageAdapter: storageAdapter,
@@ -84,8 +82,12 @@ class SecWidget extends StatelessWidget {
                 return reader.prime(payload);
               },
             ),
-            builder: LdSubmitCustomBuilder<UrpSecPrimeResponse?, void>(
-              builder: (context, controller, stateType) {
+            child: Builder(
+              builder: (
+                context,
+              ) {
+                final controller = context.watch<LdSubmitController<UrpSecPrimeResponse?, void>>();
+                final stateType = controller.state.type;
                 if (stateType == LdSubmitStateType.error) {
                   final error = controller.state.error;
                   return LdAutoSpace(
@@ -181,46 +183,41 @@ class SecWidget extends StatelessWidget {
 ///   can be extracted by `onVerificationFailed` callbacks.
 /// - [DeviceError]: Raw BLE device errors that propagated through [SECReader]
 ///   without being wrapped. Presented as a generic retriable error.
-/// - All other exceptions: Delegated to the base [LdExceptionMapper].
-class _SecExceptionMapper extends LdExceptionMapper {
-  _SecExceptionMapper({
-    required this.secLocalizations,
-    required super.localizations,
-  });
+///
+LdLocalizedException? mapSecException(BuildContext context, LdException exception) {
+  final e = exception.exception;
 
-  final SecLocalizations secLocalizations;
+  final secLocalizations = SecLocalizations.of(context);
+  final localizations = LiquidLocalizations.of(context);
 
-  @override
-  LdLocalizedException handle(dynamic e, {StackTrace? stackTrace}) {
-    if (e is SecReaderException) {
-      final retriable = {
-        SecReaderExceptionType.tokenFailed,
-        SecReaderExceptionType.measurementFailed,
-        SecReaderExceptionType.connectionFailed,
-        SecReaderExceptionType.commandFailed,
-        SecReaderExceptionType.unspecified,
-      };
-      return LdLocalizedException(
-        message: switch (e.type) {
-          SecReaderExceptionType.tokenFailed => secLocalizations.tokenFailed,
-          SecReaderExceptionType.incompatibleFirmware => secLocalizations.incompatibleFirmware,
-          SecReaderExceptionType.measurementFailed => secLocalizations.verificationFailedMessage,
-          SecReaderExceptionType.connectionFailed => localizations.unknownError,
-          SecReaderExceptionType.commandFailed => localizations.unknownError,
-          SecReaderExceptionType.unspecified => localizations.unknownError,
-        },
-        canRetry: retriable.contains(e.type),
-        exception: e,
-      );
-    }
-
-    if (e is DeviceError) {
-      return LdLocalizedException(
-        message: localizations.unknownError,
-        exception: e,
-      );
-    }
-
-    return super.handle(e, stackTrace: stackTrace);
+  if (e is SecReaderException) {
+    final retriable = {
+      SecReaderExceptionType.tokenFailed,
+      SecReaderExceptionType.measurementFailed,
+      SecReaderExceptionType.connectionFailed,
+      SecReaderExceptionType.commandFailed,
+      SecReaderExceptionType.unspecified,
+    };
+    return LdLocalizedException(
+      message: switch (e.type) {
+        SecReaderExceptionType.tokenFailed => secLocalizations.tokenFailed,
+        SecReaderExceptionType.incompatibleFirmware => secLocalizations.incompatibleFirmware,
+        SecReaderExceptionType.measurementFailed => secLocalizations.verificationFailedMessage,
+        SecReaderExceptionType.connectionFailed => localizations.unknownError,
+        SecReaderExceptionType.commandFailed => localizations.unknownError,
+        SecReaderExceptionType.unspecified => localizations.unknownError,
+      },
+      canRetry: retriable.contains(e.type),
+      exception: e,
+    );
   }
+
+  if (e is DeviceError) {
+    return LdLocalizedException(
+      message: localizations.unknownError,
+      exception: e,
+    );
+  }
+
+  return null;
 }

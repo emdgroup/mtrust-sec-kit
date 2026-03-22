@@ -34,6 +34,8 @@ dependencies:
       url: https://github.com/emdgroup/mtrust-urp.git
       ref: feat_liquid_flutter_23
       path: packages/mtrust_urp_virtual_strategy
+  mtrust_urp_types: ^6.2.1
+  provider: ^6.1.5+1
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -46,7 +48,7 @@ flutter:
     - assets/
 
 dependency_overrides:
-  liquid_flutter: ^23.0.0-1
+  liquid_flutter: ^23.0.0-2
   mtrust_urp_virtual_strategy: 
     git:
       url: https://github.com/emdgroup/mtrust-urp.git
